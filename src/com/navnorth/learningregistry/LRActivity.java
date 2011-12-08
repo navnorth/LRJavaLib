@@ -24,8 +24,6 @@ public class LRActivity extends LREnvelope
 	private static final String[] payloadSchemaValue = {"LR Paradata 1.0"};
 	private static final String payloadPlacementValue = "inline";
 	private static final String resourceDataTypeValue = "paradata";
-	
-	private Map<String, Object> resourceData;
 
 	List<Object> related = new ArrayList<Object>();
 	
@@ -328,10 +326,10 @@ public class LRActivity extends LREnvelope
 	{
 		if (pathKeys == null)
 		{
-			return resourceData;
+			return (Map<String, Object>)resourceData;
 		}
 		
-		Map<String, Object> selected = resourceData;
+		Map<String, Object> selected = (Map<String, Object>)resourceData;
 	
 		for(int i = 0; i < pathKeys.length; i++)
 		{
@@ -358,7 +356,7 @@ public class LRActivity extends LREnvelope
 	 */
 	private boolean addChild(String name, Object value, String[] pathKeys)
 	{
-		Map<String, Object> selected = resourceData;
+		Map<String, Object> selected = (Map<String, Object>)resourceData;
 		
 		if (pathKeys != null)
 		{

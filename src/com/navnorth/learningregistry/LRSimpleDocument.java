@@ -2,9 +2,7 @@ package com.navnorth.learningregistry;
 
 public class LRSimpleDocument extends LREnvelope
 {
-	private String resourceData;
-
-	public LRSimpleDocument(String resourceData, String resourceLocator, String curator, String owner, String[] tags,
+	public LRSimpleDocument(String resourceData, String resourceDataType, String resourceLocator, String curator, String owner, String[] tags,
 		String payloadPlacement, String payloadPlacementLocator, String[] payloadSchema,
 		String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer)
 	{
