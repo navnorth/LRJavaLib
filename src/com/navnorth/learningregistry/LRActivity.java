@@ -18,36 +18,36 @@ import java.util.ArrayList;
  * @version 1.0
  * @since 2011-11-17
 */
-public class LRActivity
+public class LRActivity extends LREnvelope
 {
 	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	private static final String[] payloadSchemaValue = {"LR Paradata 1.0"};
+	private static final String payloadPlacementValue = "inline";
+	private static final String resourceDataTypeValue = "paradata";
+	
+	private Map<String, Object> resourceData;
 
-	Map<String, Object> activity = new HashMap<String, Object>();
 	List<Object> related = new ArrayList<Object>();
 	
 	/**
 	 * Create an empty learning registry activity
 	 */
-	public LRActivity()
+	public LRActivity(String resourceLocator, String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer)
 	{
-	}
-	
-	/**
-	 * Get the activity as a map of objects to be fed into the exporter
-	 *
-	 * @return map of objects in the activity
-	 */
-	public Map<String, Object> getData()
-	{
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.putAll(activity);
-		
-		if (related.size() > 0)
-		{
-			data.put("related", related);
-		}
-		
-		return data;
+		this.resourceData = new HashMap<String, Object>();
+		this.resourceDataType = resourceDataTypeValue;
+		this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
+		this.curator = null;
+		this.owner = null;
+		this.tags = null;
+		this.payloadPlacement = payloadPlacementValue;
+		this.payloadSchemaLocator = null;
+		this.payloadSchema = payloadSchemaValue;
+		this.submissionTOS = LRUtilities.nullifyBadInput(submissionTOS);
+		this.submissionAttribution = LRUtilities.nullifyBadInput(submissionAttribution);
+		this.submitterType = LRUtilities.nullifyBadInput(submitterType);
+		this.submitter = LRUtilities.nullifyBadInput(submitter);
+		this.signer = LRUtilities.nullifyBadInput(signer);
 	}
 	
 	/**
@@ -328,14 +328,14 @@ public class LRActivity
 	{
 		if (pathKeys == null)
 		{
-			return activity;
+			return resourceData;
 		}
 		
-		Map<String, Object> selected = activity;
+		Map<String, Object> selected = resourceData;
 	
 		for(int i = 0; i < pathKeys.length; i++)
 		{
-			if (selected.containsKey(pathKeys[i]) && selected.get(pathKeys[i]).getClass().equals(activity.getClass()))
+			if (selected.containsKey(pathKeys[i]) && selected.get(pathKeys[i]).getClass().equals(resourceData.getClass()))
 			{
 				selected = (Map<String, Object>) selected.get(pathKeys[i]);
 			}
@@ -358,7 +358,7 @@ public class LRActivity
 	 */
 	private boolean addChild(String name, Object value, String[] pathKeys)
 	{
-		Map<String, Object> selected = activity;
+		Map<String, Object> selected = resourceData;
 		
 		if (pathKeys != null)
 		{

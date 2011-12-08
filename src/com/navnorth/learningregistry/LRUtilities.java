@@ -31,20 +31,6 @@ public class LRUtilities
 		return null;
 	}
 	
-	public static Object nullifyBadInput(Object input)
-	{
-		if ((String.class).equals(input.getClass()))
-		{
-			return input;
-		}
-		else if (input instanceof Map<?,?>)
-		{
-			return input;
-		}
-		
-		return null;
-	}
-	
 	/**
 	 * Puts an object into a map
 	 *

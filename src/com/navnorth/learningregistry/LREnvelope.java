@@ -1,5 +1,8 @@
 package com.navnorth.learningregistry;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Envelope for data to export to a learning registry node
  *
@@ -7,184 +10,106 @@ package com.navnorth.learningregistry;
  * @version 1.0
  * @since 2011-12-06
 */
-public class LREnvelope
+public abstract class LREnvelope
 {
-	private String resourceLocator;
-	private String resourceDataType;
-	private Object resourceData;
-	
-	private String payloadPlacement;
-	private String payloadSchemaLocator;
-	private String[] payloadSchema;
-	
-	private String curator;
-	private String owner;
-	private String[] tags;
-	
-	private String submissionTOS;
-	private String submissionAttribution;
-	private String submitterType;
-	private String submitter;
-	private String signer;
-	
-	public LREnvelope(Object resourceData, String resourceDataType, String resourceLocator, String curator, String owner, String[] tags,
-		String payloadPlacement, String payloadSchemaLocator, String[] payloadSchema,
-		String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer)
-	{
-		this.resourceData = LRUtilities.nullifyBadInput(resourceData);
-		this.resourceDataType = LRUtilities.nullifyBadInput(resourceDataType);
-		this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
-		this.curator = LRUtilities.nullifyBadInput(curator);
-		this.owner = LRUtilities.nullifyBadInput(owner);
-		this.tags = LRUtilities.nullifyBadInput(tags);
-		this.payloadPlacement = LRUtilities.nullifyBadInput(payloadPlacement);
-		this.payloadSchemaLocator = LRUtilities.nullifyBadInput(payloadSchemaLocator);
-		this.payloadSchema = LRUtilities.nullifyBadInput(payloadSchema);
-		this.submissionTOS = LRUtilities.nullifyBadInput(submissionTOS);
-		this.submissionAttribution = LRUtilities.nullifyBadInput(submissionAttribution);
-		this.submitterType = LRUtilities.nullifyBadInput(submitterType);
-		this.submitter = LRUtilities.nullifyBadInput(submitter);
-		this.signer = LRUtilities.nullifyBadInput(signer);
-	}
-	
-	public Object getResourceData()
-	{
-		return resourceData;
-	}
-	
-	public void setResourceData(Object resourceData)
-	{
-		this.resourceData = LRUtilities.nullifyBadInput(resourceData);
-	}
-	
-	public String getResourceLocator()
-	{
-		return resourceLocator;
-	}
-	
-	public void setResourceLocator(String resourceLocator)
-	{
-		this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
-	}
-	
-	public String getResourceDataType()
-	{
-		return resourceDataType;
-	}
-	
-	public void setResourceDataType(String resourceLocator)
-	{
-		this.resourceDataType = LRUtilities.nullifyBadInput(resourceDataType);
-	}
-	
-	public String getCurator()
-	{
-		return curator;
-	}
-	
-	public void setCurator(String curator)
-	{
-		this.curator = LRUtilities.nullifyBadInput(curator);
-	}
-	
-	public String getOwner()
-	{
-		return owner;
-	}
-	
-	public void setOwner(String owner)
-	{
-		this.owner = LRUtilities.nullifyBadInput(owner);
-	}
-	
-	public String[] getTags()
-	{
-		return tags;
-	}
-	
-	public void setTags(String[] tags)
-	{
-		this.tags = LRUtilities.nullifyBadInput(tags);
-	}
+	private static final String docVersion = "0.23.0";
+	private static final String docType = "resource_data";
 
-	public String getPayloadPlacement()
-	{
-		return payloadPlacement;
-	}
+	protected String resourceLocator;
+	protected String resourceDataType;
+	protected Object resourceData;
 	
-	public void setPayloadPlacement(String payloadPlacement)
-	{
-		this.payloadPlacement = LRUtilities.nullifyBadInput(payloadPlacement);
-	}
+	protected String payloadPlacement;
+	protected String payloadSchemaLocator;
+	protected String[] payloadSchema;
 	
-	public String getPayloadSchemaLocator()
-	{
-		return payloadSchemaLocator;
-	}
+	protected String curator;
+	protected String owner;
+	protected String[] tags;
 	
-	public void setPayloadSchemaLocator(String payloadSchemaLocator)
-	{
-		this.payloadSchemaLocator = LRUtilities.nullifyBadInput(payloadSchemaLocator);
-	}
+	protected String submissionTOS;
+	protected String submissionAttribution;
+	protected String submitterType;
+	protected String submitter;
+	protected String signer;
+	
+	protected Boolean signed = false;
+	
+	protected String publicKeyLocation;
+	protected String signingMethod;
+	protected String clearSignedMessage;
 
-	public String[] getPayloadSchema()
+	public Map<String, Object> getSignableData()
 	{
-		return payloadSchema;
-	}
-	
-	public void setPayloadSchema(String[] payloadSchema)
-	{
-		this.payloadSchema = LRUtilities.nullifyBadInput(payloadSchema);
-	}
-	
-	public String getSubmissionTOS()
-	{
-		return submissionTOS;
-	}
-	
-	public void setSubmissionTOS(String submissionTOS)
-	{
-		this.submissionTOS = LRUtilities.nullifyBadInput(submissionTOS);
-	}
-	
-	public String getSubmissionAttribution()
-	{
-		return submissionAttribution;
-	}
-	
-	public void setSubmissionAttribution(String submissionAttribution)
-	{
-		this.submissionAttribution = LRUtilities.nullifyBadInput(submissionAttribution);
-	}
-	
-	public String getSubmitterType()
-	{
-		return submitterType;
-	}
-	
-	public void setSubmitterType(String submitterType)
-	{
-		this.submitterType = LRUtilities.nullifyBadInput(submitterType);
-	}
+		Map<String, Object> doc = new HashMap<String, Object>();
+		LRUtilities.put(doc, "doc_type", docType);
+		LRUtilities.put(doc, "doc_version", docVersion);
+		LRUtilities.put(doc, "active", "true");
+		LRUtilities.put(doc, "resource_data_type", resourceDataType);
+		Map<String, Object> docId = new HashMap<String, Object>();
+		LRUtilities.put(docId, "submitter_type", submitterType);
+		LRUtilities.put(docId, "submitter", submitter);
+		LRUtilities.put(docId, "curator", curator);
+		LRUtilities.put(docId, "owner", owner);
+		LRUtilities.put(docId, "signer", signer);
+		LRUtilities.put(doc, "identity", docId);
+		Map<String, Object> docTOS = new HashMap<String, Object>();
+		LRUtilities.put(docTOS, "submission_TOS", submissionTOS);
+		LRUtilities.put(docTOS, "submission_attribution", submissionAttribution);
+		LRUtilities.put(doc, "TOS", docTOS);
+		LRUtilities.put(doc, "resource_locator", resourceLocator);
+		LRUtilities.put(doc, "payload_placement", payloadPlacement);
+		LRUtilities.put(doc, "payload_schema", payloadSchema);
+		LRUtilities.put(doc, "payload_schema_locator", payloadSchemaLocator);
+		LRUtilities.put(doc, "keys", tags);
+		LRUtilities.put(doc, "resource_data", resourceData);
 		
-	public String getSubmitter()
-	{
-		return submitter;
+		return doc;
 	}
 	
-	public void setSubmitter(String submitter)
+	public Map<String, Object> getSendableData()
 	{
-		this.submitter = LRUtilities.nullifyBadInput(submitter);
+		Map<String, Object> doc = new HashMap<String, Object>();
+		LRUtilities.put(doc, "doc_type", docType);
+		LRUtilities.put(doc, "doc_version", docVersion);
+		LRUtilities.put(doc, "active", true);
+		LRUtilities.put(doc, "resource_data_type", resourceDataType);
+		Map<String, Object> docId = new HashMap<String, Object>();
+		LRUtilities.put(docId, "submitter_type", submitterType);
+		LRUtilities.put(docId, "submitter", submitter);
+		LRUtilities.put(docId, "curator", curator);
+		LRUtilities.put(docId, "owner", owner);
+		LRUtilities.put(docId, "signer", signer);
+		LRUtilities.put(doc, "identity", docId);
+		Map<String, Object> docTOS = new HashMap<String, Object>();
+		LRUtilities.put(docTOS, "submission_TOS", submissionTOS);
+		LRUtilities.put(docTOS, "submission_attribution", submissionAttribution);
+		LRUtilities.put(doc, "TOS", docTOS);
+		LRUtilities.put(doc, "resource_locator", resourceLocator);
+		LRUtilities.put(doc, "payload_placement", payloadPlacement);
+		LRUtilities.put(doc, "payload_schema", payloadSchema);
+		LRUtilities.put(doc, "payload_schema_locator", payloadSchemaLocator);
+		LRUtilities.put(doc, "keys", tags);
+		LRUtilities.put(doc, "resource_data", resourceData);
+		
+		if (signed)
+		{
+			Map<String, Object> sig = new HashMap<String, Object>();
+			String[] keys = {publicKeyLocation};
+			LRUtilities.put(sig, "key_location", keys);
+			LRUtilities.put(sig, "signing_method", signingMethod);
+			LRUtilities.put(sig, "signature", clearSignedMessage);
+			LRUtilities.put(doc, "digital_signature", sig);
+		}
+		
+		return doc;
 	}
 	
-	public String getSigner()
+	public void addSigningData(String signingMethod, String publicKeyLocation, String clearSignedMessage)
 	{
-		return signer;
+		this.signingMethod = signingMethod;
+		this.publicKeyLocation = publicKeyLocation;
+		this.clearSignedMessage = clearSignedMessage;
+		this.signed = true;
 	}
-	
-	public void setSigner(String signer)
-	{
-		this.signer = LRUtilities.nullifyBadInput(signer);
-	}
-	
 }
