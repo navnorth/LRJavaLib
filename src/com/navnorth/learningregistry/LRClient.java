@@ -43,6 +43,19 @@ import org.apache.http.util.EntityUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 
+/**
+ * Client for sending data to Learning Registry nodes
+ *
+ * @version 0.1
+ * @since 2011-12-06
+ * @author Todd Brown / Navigation North
+ *      <br>
+ *      Copyright © 2011 Navigation North Learning Solutions LLC
+ *      <br>
+ *      Licensed under the Apache License, Version 2.0 (the "License"); See LICENSE
+ *      and README.md files distributed with this work for additional information
+ *      regarding copyright ownership.
+ */
 public class LRClient {
 
     // milliseconds

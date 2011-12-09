@@ -16,7 +16,7 @@ package com.navnorth.learningregistry;
 /**
  * Exceptions thrown by the Learning Registery Exporter
  *
- * @version    0.1
+ * @version 0.1
  * @since 2011-11-17
  * @author Todd Brown / Navigation North
  *      <br>

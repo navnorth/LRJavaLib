@@ -21,7 +21,7 @@ import org.json.*;
 /**
  * Result of a learning registry consumption request
  *
- * @version    0.1
+ * @version 0.1
  * @since 2011-11-17
  * @author Todd Brown / Navigation North
  *      <br>

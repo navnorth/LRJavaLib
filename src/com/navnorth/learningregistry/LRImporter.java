@@ -27,7 +27,7 @@ import org.json.*;
 /**
  * Importer of data from a Learning Registry node
  *
- * @version    0.1
+ * @version 0.1
  * @since 2011-11-17
  * @author Todd Brown / Navigation North
  *      <br>
@@ -81,7 +81,7 @@ public class LRImporter
      */
     private String getObtainRequestPath(String requestID, Boolean byResourceID, Boolean byDocID, Boolean idsOnly, String resumptionToken)
     {
-        String path = nodeURL + harvestPath;
+        String path = nodeURL + obtainPath;
         
         if (resumptionToken != null)
         {
@@ -139,7 +139,7 @@ public class LRImporter
      */
     private String getHarvestRequestPath(String requestID, Boolean byResourceID, Boolean byDocID)
     {
-        String path = nodeURL + obtainPath;
+        String path = nodeURL + harvestPath;
         
         if (requestID != null)
         {
@@ -249,7 +249,7 @@ public class LRImporter
             json = getJSONFromPath(path);
         }
         
-        return new LRResult(json);    
+        return new LRResult(json);	
     }
         
     /**

@@ -31,6 +31,19 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
 
+/**
+ * Self signing factory
+ *
+ * @version 0.1
+ * @since 2011-11-17
+ * @author Todd Brown / Navigation North
+ *      <br>
+ *      Copyright © 2011 Navigation North Learning Solutions LLC
+ *      <br>
+ *      Licensed under the Apache License, Version 2.0 (the "License"); See LICENSE
+ *      and README.md files distributed with this work for additional information
+ *      regarding copyright ownership.
+ */
 public class LRSelfSignSSLSocketFactory extends SSLSocketFactory {
     SSLContext sslContext = SSLContext.getInstance("TLS");
     public LRSelfSignSSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {

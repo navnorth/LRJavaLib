@@ -54,307 +54,360 @@ import java.io.IOException;
  */
 public class LRExporter
 {
-    // Static strings
-    private static final String publishUrlPrefix = "http://";
-    private static final String publishSSLUrlPrefix = "https://";
-    private static final String publishUrlPath = "/publish";
-    
-    // Cofiguration variables
-    private int batchSize;
-    private String url;
-    private String publishAuthUser;
-    private String publishAuthPassword;
-    
-    // Booleans to track if configuration is complete
-    private boolean configured = false;
+	// Static strings
+	private static final String publishUrlPrefix = "http://";
+	private static final String publishSSLUrlPrefix = "https://";
+	private static final String publishUrlPath = "/publish";
+	
+	// Cofiguration variables
+	private int batchSize;
+	private String url;
+	private String publishAuthUser;
+	private String publishAuthPassword;
+	
+	// Booleans to track if configuration is complete
+	private boolean configured = false;
 
-    // Collection of encoded documents to be sent
-    private List<Object> docs = new ArrayList<Object>();
-    
-    /**
-     * Creates the exporter object and adds the security provider
-    */
+	// Collection of encoded documents to be sent
+	private List<Object> docs = new ArrayList<Object>();
+	
+	/**
+	 * Creates the exporter object with the specified details
+	 *
+	 * @param batchSize the number of items to submit per batch to the Learning Registry node
+	 * @param url location of the Learning Registry node to use for export
+	*/
     public LRExporter(int batchSize, String url)
     {
-        this.batchSize = batchSize;
-        this.url = url;
-        this.publishAuthUser = null;
-        this.publishAuthPassword = null;
+		this.batchSize = batchSize;
+		this.url = url;
+		this.publishAuthUser = null;
+		this.publishAuthPassword = null;
     }
-    
-    /**
-     * Creates the exporter object and adds the security provider
-    */
+	
+	/**
+	 * Creates the exporter object with the specified details
+	 * This version of the constructor sets the exporter up to use SSL
+	 *
+	 * @param batchSize the number of items to submit per batch to the Learning Registry node
+	 * @param url location of the Learning Registry node to use for export
+	 * @param publishAuthUser user value for SSL
+	 * @param publishAuthPassword password value for SSL
+	*/
     public LRExporter(int batchSize, String url, String publishAuthUser, String publishAuthPassword)
     {
-        this.batchSize = batchSize;
-        this.url = url;
-        this.publishAuthUser = publishAuthUser;
-        this.publishAuthPassword = publishAuthPassword;
+		this.batchSize = batchSize;
+		this.url = url;
+		this.publishAuthUser = publishAuthUser;
+		this.publishAuthPassword = publishAuthPassword;
     }
 
-    public void configure() throws LRException
-    {
-        // Trim or nullify strings
-        url = LRUtilities.nullifyBadInput(url);
-        publishAuthUser = LRUtilities.nullifyBadInput(publishAuthUser);
-        publishAuthPassword = LRUtilities.nullifyBadInput(publishAuthPassword);
-    
-        // Throw an exception if any of the required fields are null
-        if (url == null)
-        {
-            throw new LRException(LRException.NULL_FIELD);
-        }
-        
-        // Throw an error if the batch size is zero
-        if (batchSize == 0)
-        {
-            throw new LRException(LRException.BATCH_ZERO);
-        }
-    
-        this.batchSize = batchSize;
-        
-        // If both authorization values are not present, use the non-SSL url
-        if (publishAuthUser == null || publishAuthPassword == null)
-        {
-            this.url = publishUrlPrefix + url + publishUrlPath;
-        }
-        // Otherwise, use the SSL url
-        else
-        {
-            this.url = publishSSLUrlPrefix + url + publishUrlPath;
-        }
-        
-        this.publishAuthUser = publishAuthUser;
-        this.publishAuthPassword = publishAuthPassword;
-        
-        this.configured = true;
-    }
-    
-    /**
-     * Adds a document to the exporter
-     *
-     * This version should be used when including the optional fields
-     *
-     * @param resourceLocator Locator of the document being added (should be the original url)
-     * @param resourceData Data to be added for this document (String or Map<String, Object>)
-     * @param curator Curator of this document
-     * @param owner Owner of this document
-     * @param tags Key values to add to this document
-     * @throws LRException NO_DATA, NO_LOCATOR, NOT_DETAILED, NOT_CONFIGURED, BENCODE_FAILED, SIGNING_FAILED, NO_KEY, NO_KEY_STREAM
-    */
-    public void addDocument(LREnvelope envelope) throws LRException
-    {
-        if(!configured)
-        {
-            throw new LRException(LRException.NOT_CONFIGURED);
-        }
-        
-        docs.add(envelope.getSendableData());
-    }
-    
-    /**
-     * Sends documents to the node defined in configuration
-     *
-     * @return List of LRResponse packages for each batch of documents sent to the node
-     * @throws LRException NOT_CONFIGURED, NO_DOCUMENTS, NO_RESPONSE, INVALID_RESPONSE, JSON_FAILED
-    */
-    public List<LRResponse> sendData() throws LRException
-    {
-        // Throw an error if configuration has not been performed
-        if(!configured)
-        {
-            throw new LRException(LRException.NOT_CONFIGURED);
-        }
-        
-        // Throw an error if no documents have been added for submission
-        if (docs.size() == 0)
-        {
-            throw new LRException(LRException.NO_DOCUMENTS);
-        }
-        
-        List<LRResponse> responses = new ArrayList<LRResponse>();
-        
-        JSONObject jsonObjSend = new JSONObject();
+	/**
+	 * Attempt to configure the exporter with the values used in the constructor
+	 * This must be called before an exporter can be used and after any setting of configuration values
+	 *
+	 * @throws LRException
+	 */
+	public void configure() throws LRException
+	{
+		// Trim or nullify strings
+		url = LRUtilities.nullifyBadInput(url);
+		publishAuthUser = LRUtilities.nullifyBadInput(publishAuthUser);
+		publishAuthPassword = LRUtilities.nullifyBadInput(publishAuthPassword);
+	
+		// Throw an exception if any of the required fields are null
+		if (url == null)
+		{
+			throw new LRException(LRException.NULL_FIELD);
+		}
+		
+		// Throw an error if the batch size is zero
+		if (batchSize == 0)
+		{
+			throw new LRException(LRException.BATCH_ZERO);
+		}
+	
+		this.batchSize = batchSize;
+		
+		// If both authorization values are not present, use the non-SSL url
+		if (publishAuthUser == null || publishAuthPassword == null)
+		{
+			this.url = publishUrlPrefix + url + publishUrlPath;
+		}
+		// Otherwise, use the SSL url
+		else
+		{
+			this.url = publishSSLUrlPrefix + url + publishUrlPath;
+		}
+		
+		this.publishAuthUser = publishAuthUser;
+		this.publishAuthPassword = publishAuthPassword;
+		
+		this.configured = true;
+	}
+	
+	/**
+	 * Adds an envelope to the exporter
+	 *
+	 * @param envelope envelope to add to the exporter
+	 * @throws LRException NOT_CONFIGURED
+	*/
+	public void addDocument(LREnvelope envelope) throws LRException
+	{
+		if(!configured)
+		{
+			throw new LRException(LRException.NOT_CONFIGURED);
+		}
+		
+		docs.add(envelope.getSendableData());
+	}
+	
+	/**
+	 * Sends documents to the node defined in configuration
+	 *
+	 * @return List of LRResponse packages for each batch of documents sent to the node
+	 * @throws LRException NOT_CONFIGURED, NO_DOCUMENTS, NO_RESPONSE, INVALID_RESPONSE, JSON_FAILED
+	*/
+	public List<LRResponse> sendData() throws LRException
+	{
+		// Throw an error if configuration has not been performed
+		if(!configured)
+		{
+			throw new LRException(LRException.NOT_CONFIGURED);
+		}
+		
+		// Throw an error if no documents have been added for submission
+		if (docs.size() == 0)
+		{
+			throw new LRException(LRException.NO_DOCUMENTS);
+		}
+		
+		List<LRResponse> responses = new ArrayList<LRResponse>();
+		
+		JSONObject jsonObjSend = new JSONObject();
 
-        // Figure out how many batches need to be sent
-        int batches = (int)Math.ceil((float)docs.size() / batchSize);
-        
-        // Send each batch and add the response to our return value
-        for (int i = 0; i < batches; i++)
-        {
-            int startIndex = i * batchSize;
-            int endIndex = startIndex + batchSize;
-            if (endIndex > docs.size())
-            {
-                endIndex = docs.size();
-            }
-        
-            List<Object> batchDoc = docs.subList(startIndex, endIndex);
-            
-            // Add this batch of documents to the batch parent document
-            try
-            {
-                jsonObjSend.put("documents", batchDoc);
-            }
-            catch (JSONException e)
-            {
-                throw new LRException(LRException.JSON_FAILED);
-            }
+		// Figure out how many batches need to be sent
+		int batches = (int)Math.ceil((float)docs.size() / batchSize);
+		
+		// Send each batch and add the response to our return value
+		for (int i = 0; i < batches; i++)
+		{
+			int startIndex = i * batchSize;
+			int endIndex = startIndex + batchSize;
+			if (endIndex > docs.size())
+			{
+				endIndex = docs.size();
+			}
+		
+			List<Object> batchDoc = docs.subList(startIndex, endIndex);
+			
+			// Add this batch of documents to the batch parent document
+			try
+			{
+				jsonObjSend.put("documents", batchDoc);
+			}
+			catch (JSONException e)
+			{
+				throw new LRException(LRException.JSON_FAILED);
+			}
 
-            String jsonString = jsonObjSend.toString();
+			String jsonString = jsonObjSend.toString();
 
-            HttpResponse response;
-            
-            String jsonError = "";
-            
-            StringEntity se;
-            
-            // Convert this batch into a string for submission
-            try
-            {
-                se = new StringEntity(jsonString);
-            }
-            catch (UnsupportedEncodingException e)
-            {
-                throw new LRException(LRException.JSON_FAILED);
-            }
-            
-            // Send the string to the node
-            try
-            {
-                response = LRClient.executeJsonPost(url, se, publishAuthUser, publishAuthPassword);
-            }
-            catch (Exception e)
-            {
-                throw new LRException(LRException.NO_RESPONSE);
-            }
+			HttpResponse response;
+			
+			String jsonError = "";
+			
+			StringEntity se;
+			
+			// Convert this batch into a string for submission
+			try
+			{
+				se = new StringEntity(jsonString);
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				throw new LRException(LRException.JSON_FAILED);
+			}
+			
+			// Send the string to the node
+			try
+			{
+				response = LRClient.executeJsonPost(url, se, publishAuthUser, publishAuthPassword);
+			}
+			catch (Exception e)
+			{
+				throw new LRException(LRException.NO_RESPONSE);
+			}
 
-            LRResponse responsePackage = null;
-            
-            // Get the response from the node
-            if (response != null)
-            {
-                try
-                {
-                    InputStream is = response.getEntity().getContent();
-                    jsonError = IOUtils.toString(is, "UTF-8");
-                    responsePackage = new LRResponse(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
-                }
-                catch (IOException e)
-                {
-                    throw new LRException(LRException.INVALID_RESPONSE);
-                }
-            }
+			LRResponse responsePackage = null;
+			
+			// Get the response from the node
+			if (response != null)
+			{
+				try
+				{
+					InputStream is = response.getEntity().getContent();
+					jsonError = IOUtils.toString(is, "UTF-8");
+					responsePackage = new LRResponse(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+				}
+				catch (IOException e)
+				{
+					throw new LRException(LRException.INVALID_RESPONSE);
+				}
+			}
 
-            // Decode the response and prepare results for return
-            if (responsePackage != null)
-            {
-                try
-                {
-                    JSONObject jsonObjRes = new JSONObject(jsonError);
-                    
-                    boolean batchSuccess = false;
-                    String batchError = "No error reported";
-                    if (jsonObjRes.has("OK"))
-                    {
-                        batchSuccess = jsonObjRes.getBoolean("OK");
-                    }
-                    if (jsonObjRes.has("error"))
-                    {
-                        batchError = jsonObjRes.getString("error");
-                    }
-                    
-                    responsePackage.setBatchResponse(batchError, batchSuccess);
+			// Decode the response and prepare results for return
+			if (responsePackage != null)
+			{
+				try
+				{
+					JSONObject jsonObjRes = new JSONObject(jsonError);
+					
+					boolean batchSuccess = false;
+					String batchError = "No error reported";
+					if (jsonObjRes.has("OK"))
+					{
+						batchSuccess = jsonObjRes.getBoolean("OK");
+					}
+					if (jsonObjRes.has("error"))
+					{
+						batchError = jsonObjRes.getString("error");
+					}
+					
+					responsePackage.setBatchResponse(batchError, batchSuccess);
 
-                    if (batchSuccess)
-                    {
-                        JSONArray jarry = jsonObjRes.getJSONArray("document_results");
-                        
-                        for(int j = 0; j < jarry.length(); j++)
-                        {
-                            JSONObject job = jarry.getJSONObject(j);
-                            
-                            String error = "";
-                            String id = "";
-                            boolean ok = false;
-                            
-                            if (job.has("OK"))
-                                ok = job.getBoolean("OK");
+					if (batchSuccess)
+					{
+						JSONArray jarry = jsonObjRes.getJSONArray("document_results");
+						
+						for(int j = 0; j < jarry.length(); j++)
+						{
+							JSONObject job = jarry.getJSONObject(j);
+							
+							String error = "";
+							String id = "";
+							boolean ok = false;
+							
+							if (job.has("OK"))
+								ok = job.getBoolean("OK");
 
-                            if (ok)
-                            {
-                                if (job.has("doc_ID"))
-                                {
-                                    id = job.getString("doc_ID");
-                                }
-                                
-                                responsePackage.addResourceSuccess(id);
-                            }
-                            else
-                            {
-                                if (job.has("error"))
-                                {
-                                    error = job.getString("error");
-                                }
-                                
-                                responsePackage.addResourceFailure(error);
-                            }
-                        }
-                    }
-                }
-                catch (JSONException e)
-                {
-                    //Return response package anyway, since it already has the basic information we need
-                }
-                responses.add(responsePackage);
-            }
-        }
-        
-        return responses;
-    }
+							if (ok)
+							{
+								if (job.has("doc_ID"))
+								{
+									id = job.getString("doc_ID");
+								}
+								
+								responsePackage.addResourceSuccess(id);
+							}
+							else
+							{
+								if (job.has("error"))
+								{
+									error = job.getString("error");
+								}
+								
+								responsePackage.addResourceFailure(error);
+							}
+						}
+					}
+				}
+				catch (JSONException e)
+				{
+					//Return response package anyway, since it already has the basic information we need
+				}
+				responses.add(responsePackage);
+			}
+		}
+		
+		return responses;
+	}
 
-    public void setBatchSize(int batchSize)
-    {
-        this.batchSize = batchSize;
-        configured = false;
-    }
-    
-    public int getBatchSize()
-    {
-        return batchSize;
-    }
-    
-    public void setUrl(String url)
-    {
-        this.url = url;
-        configured = false;
-    }
-    
-    public String getUrl()
-    {
-        return url;
-    }
+	/**
+	 * Sets the batchSize value
+	 * Must call "configure" on exporter after setting this
+	 *
+	 * @param batchSize value
+	 */
+	public void setBatchSize(int batchSize)
+	{
+		this.batchSize = batchSize;
+		configured = false;
+	}
+	
+	/**
+	 * Get the batchSize value
+	 *
+	 * @return batchSize value
+	 */
+	public int getBatchSize()
+	{
+		return batchSize;
+	}
+	
+	/**
+	 * Sets the url value
+	 * Must call "configure" on exporter after setting this
+	 *
+	 * @param url value
+	 */
+	public void setUrl(String url)
+	{
+		this.url = url;
+		configured = false;
+	}
+	
+	/**
+	 * Get the url value
+	 *
+	 * @return url value
+	 */
+	public String getUrl()
+	{
+		return url;
+	}
 
-    public void setPublishAuthUser(String publishAuthUser)
-    {
-        this.publishAuthUser = publishAuthUser;
-        configured = false;
-    }
-    
-    public String getPublishAuthUser()
-    {
-        return publishAuthUser;
-    }
-    
-    public void setPublishAuthPassword(String publishAuthPassword)
-    {
-        this.publishAuthPassword = publishAuthPassword;
-        configured = false;
-    }
-    
-    public String getPublishAuthPassword()
-    {
-        return publishAuthPassword;
-    }
+	/**
+	 * Sets the publishAuthUser value
+	 * Must call "configure" on exporter after setting this
+	 *
+	 * @param publishAuthUser value
+	 */
+	public void setPublishAuthUser(String publishAuthUser)
+	{
+		this.publishAuthUser = publishAuthUser;
+		configured = false;
+	}
+	
+	/**
+	 * Get the publishAuthUser value
+	 *
+	 * @return publishAuthUser value
+	 */
+	public String getPublishAuthUser()
+	{
+		return publishAuthUser;
+	}
+	
+	/**
+	 * Sets the publishAuthPassword value
+	 * Must call "configure" on exporter after setting this
+	 *
+	 * @param publishAuthPassword value
+	 */
+	public void setPublishAuthPassword(String publishAuthPassword)
+	{
+		this.publishAuthPassword = publishAuthPassword;
+		configured = false;
+	}
+	
+	/**
+	 * Get the publishAuthPassword value
+	 *
+	 * @return publishAuthPassword value
+	 */
+	public String getPublishAuthPassword()
+	{
+		return publishAuthPassword;
+	}
 }

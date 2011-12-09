@@ -28,7 +28,7 @@ import java.util.ArrayList;
  * Utility class for building activity paradata for the Learning Registry Exporter
  * The map built by the getData() function is appropriate to use as resource data in the exporter
  *
- * @version    0.1
+ * @version 0.1
  * @since 2011-11-17
  * @author Todd Brown / Navigation North
  *      <br>
@@ -44,13 +44,18 @@ public class LRActivity extends LREnvelope
     private static final String[] payloadSchemaValue = {"LR Paradata 1.0"};
     private static final String payloadPlacementValue = "inline";
     private static final String resourceDataTypeValue = "paradata";
-    
-    private Map<String, Object> resourceData;
 
     List<Object> related = new ArrayList<Object>();
-    
+
     /**
-     * Create an empty learning registry activity
+     * Create a new activity with specified details
+     *
+     * @param resourceLocator value for "resource_locator"
+     * @param submitter value for "submitter"
+     * @param submitterType value for "submitter_type"
+     * @param submissionTOS value for "submission_TOS"
+     * @param submissionAttribution value for "submission_attribution"
+     * @param signer value for "signer"
      */
     public LRActivity(String resourceLocator, String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer)
     {
@@ -348,10 +353,10 @@ public class LRActivity extends LREnvelope
     {
         if (pathKeys == null)
         {
-            return resourceData;
+            return (Map<String, Object>)resourceData;
         }
         
-        Map<String, Object> selected = resourceData;
+        Map<String, Object> selected = (Map<String, Object>)resourceData;
     
         for(int i = 0; i < pathKeys.length; i++)
         {
@@ -378,7 +383,7 @@ public class LRActivity extends LREnvelope
      */
     private boolean addChild(String name, Object value, String[] pathKeys)
     {
-        Map<String, Object> selected = resourceData;
+        Map<String, Object> selected = (Map<String, Object>)resourceData;
         
         if (pathKeys != null)
         {

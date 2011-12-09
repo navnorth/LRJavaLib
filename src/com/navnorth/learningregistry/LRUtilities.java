@@ -15,10 +15,42 @@ package com.navnorth.learningregistry;
 
 import java.util.Map;
 
+/**
+ * Utility functions used by various Learning Registry classes
+ *
+ * @version 0.1
+ * @since 2011-12-09
+ * @author Todd Brown / Navigation North
+ *      <br>
+ *      Copyright © 2011 Navigation North Learning Solutions LLC
+ *      <br>
+ *      Licensed under the Apache License, Version 2.0 (the "License"); See LICENSE
+ *      and README.md files distributed with this work for additional information
+ *      regarding copyright ownership.
+ */
 public class LRUtilities
 {
     private static final String emptyRegex = "\\s*";
+    private static final String xmlRegex = "<\\?xml.*\\?>";
+    private static final String cleanRegex = "[^a-zA-Z0-9<>/:-;&\\?\"=\\s-\\._@\\$%]";
+    
+    /**
+     * Clean a string so that it only contains characters that will be accepted by a Learning Registry node
+     *
+     * @param resourceData data to be cleaned
+     * @return cleaned data
+     */
+    public static String cleanResourceData(String resourceData)
+	{
+		return resourceData.replaceAll(xmlRegex, "").replaceAll(cleanRegex, "");
+	}
 
+    /**
+     * Returns a valid string or null, if empty
+     *
+     * @param input original string
+     * @return resultant string
+     */
     public static String nullifyBadInput(String input)
     {
         if (input != null)
@@ -32,6 +64,12 @@ public class LRUtilities
         return null;
     }
     
+    /**
+     * Returns a valid string array or null, if empty
+     *
+     * @param input original string array
+     * @return resultant string array
+     */
     public static String[] nullifyBadInput(String[] input)
     {
         if (input != null)

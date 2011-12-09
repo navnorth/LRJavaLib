@@ -19,7 +19,7 @@ import java.util.HashMap;
 /**
  * Envelope for data to export to a learning registry node
  *
- * @version    0.1
+ * @version 0.1
  * @since 2011-12-06
  * @author Todd Brown / Navigation North
  *      <br>
@@ -33,7 +33,33 @@ public abstract class LREnvelope
 {
     private static final String docVersion = "0.23.0";
     private static final String docType = "resource_data";
-
+    private static final String active = "true";
+    
+    private static final String docTypeField = "doc_type";
+    private static final String docVersionField = "doc_version";
+    private static final String activeField = "active";
+    private static final String resourceDataTypeField = "resource_data_type";
+    private static final String submitterTypeField = "submitter_type";
+    private static final String submitterField = "submitter";
+    private static final String curatorField = "curator";
+    private static final String ownerField = "owner";
+    private static final String signerField = "signer";
+    private static final String identityField = "identity";
+    private static final String submissionTOSField = "submission_TOS";
+    private static final String submissionAttributionField = "submission_attribution";
+    private static final String TOSField = "TOS";
+    private static final String resourceLocatorField = "resource_locator";
+    private static final String payloadPlacementField = "payload_placement";
+    private static final String payloadSchemaField = "payload_schema";
+    private static final String payloadSchemaLocatorField = "payload_schema_locator";
+    private static final String keysField = "keys";
+    private static final String resourceDataField = "resource_data";
+    
+    private static final String keyLocationField = "key_location";
+    private static final String signingMethodField = "signing_method";
+    private static final String signatureField = "signature";
+    private static final String digitalSignatureField = "digital_signature";
+    
     protected String resourceLocator;
     protected String resourceDataType;
     protected Object resourceData;
@@ -58,58 +84,70 @@ public abstract class LREnvelope
     protected String signingMethod;
     protected String clearSignedMessage;
 
+    /**
+     * Builds and returns a map of the envelope data, suitable for signing with the included signer
+     *
+     * @return map of envelope data, suitable for signing
+     */
     public Map<String, Object> getSignableData()
     {
         Map<String, Object> doc = new HashMap<String, Object>();
-        LRUtilities.put(doc, "doc_type", docType);
-        LRUtilities.put(doc, "doc_version", docVersion);
-        LRUtilities.put(doc, "active", "true");
-        LRUtilities.put(doc, "resource_data_type", resourceDataType);
+        
+        LRUtilities.put(doc, docTypeField, docType);
+        LRUtilities.put(doc, docVersionField, docVersion);
+        LRUtilities.put(doc, activeField, active);
+        LRUtilities.put(doc, resourceDataTypeField, resourceDataType);
         Map<String, Object> docId = new HashMap<String, Object>();
-        LRUtilities.put(docId, "submitter_type", submitterType);
-        LRUtilities.put(docId, "submitter", submitter);
-        LRUtilities.put(docId, "curator", curator);
-        LRUtilities.put(docId, "owner", owner);
-        LRUtilities.put(docId, "signer", signer);
-        LRUtilities.put(doc, "identity", docId);
+        LRUtilities.put(docId, submitterTypeField, submitterType);
+        LRUtilities.put(docId, submitterField, submitter);
+        LRUtilities.put(docId, curatorField, curator);
+        LRUtilities.put(docId, ownerField, owner);
+        LRUtilities.put(docId, signerField, signer);
+        LRUtilities.put(doc, identityField, docId);
         Map<String, Object> docTOS = new HashMap<String, Object>();
-        LRUtilities.put(docTOS, "submission_TOS", submissionTOS);
-        LRUtilities.put(docTOS, "submission_attribution", submissionAttribution);
-        LRUtilities.put(doc, "TOS", docTOS);
-        LRUtilities.put(doc, "resource_locator", resourceLocator);
-        LRUtilities.put(doc, "payload_placement", payloadPlacement);
-        LRUtilities.put(doc, "payload_schema", payloadSchema);
-        LRUtilities.put(doc, "payload_schema_locator", payloadSchemaLocator);
-        LRUtilities.put(doc, "keys", tags);
-        LRUtilities.put(doc, "resource_data", resourceData);
+        LRUtilities.put(docTOS, submissionTOSField, submissionTOS);
+        LRUtilities.put(docTOS, submissionAttributionField, submissionAttribution);
+        LRUtilities.put(doc, TOSField, docTOS);
+        LRUtilities.put(doc, resourceLocatorField, resourceLocator);
+        LRUtilities.put(doc, payloadPlacementField, payloadPlacement);
+        LRUtilities.put(doc, payloadSchemaField, payloadSchema);
+        LRUtilities.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
+        LRUtilities.put(doc, keysField, tags);
+        LRUtilities.put(doc, resourceDataField, resourceData);
         
         return doc;
     }
     
+    /**
+     * Builds and returns a map of the envelope data including any signing data, suitable for sending to a Learning Registry node
+     *
+     * @return map of the envelope data, including signing data
+     */
     public Map<String, Object> getSendableData()
     {
         Map<String, Object> doc = new HashMap<String, Object>();
-        LRUtilities.put(doc, "doc_type", docType);
-        LRUtilities.put(doc, "doc_version", docVersion);
-        LRUtilities.put(doc, "active", true);
-        LRUtilities.put(doc, "resource_data_type", resourceDataType);
+    
+        LRUtilities.put(doc, docTypeField, docType);
+        LRUtilities.put(doc, docVersionField, docVersion);
+        LRUtilities.put(doc, activeField, true);
+        LRUtilities.put(doc, resourceDataTypeField, resourceDataType);
         Map<String, Object> docId = new HashMap<String, Object>();
-        LRUtilities.put(docId, "submitter_type", submitterType);
-        LRUtilities.put(docId, "submitter", submitter);
-        LRUtilities.put(docId, "curator", curator);
-        LRUtilities.put(docId, "owner", owner);
-        LRUtilities.put(docId, "signer", signer);
-        LRUtilities.put(doc, "identity", docId);
+        LRUtilities.put(docId, submitterTypeField, submitterType);
+        LRUtilities.put(docId, submitterField, submitter);
+        LRUtilities.put(docId, curatorField, curator);
+        LRUtilities.put(docId, ownerField, owner);
+        LRUtilities.put(docId, signerField, signer);
+        LRUtilities.put(doc, identityField, docId);
         Map<String, Object> docTOS = new HashMap<String, Object>();
-        LRUtilities.put(docTOS, "submission_TOS", submissionTOS);
-        LRUtilities.put(docTOS, "submission_attribution", submissionAttribution);
-        LRUtilities.put(doc, "TOS", docTOS);
-        LRUtilities.put(doc, "resource_locator", resourceLocator);
-        LRUtilities.put(doc, "payload_placement", payloadPlacement);
-        LRUtilities.put(doc, "payload_schema", payloadSchema);
-        LRUtilities.put(doc, "payload_schema_locator", payloadSchemaLocator);
-        LRUtilities.put(doc, "keys", tags);
-        LRUtilities.put(doc, "resource_data", resourceData);
+        LRUtilities.put(docTOS, submissionTOSField, submissionTOS);
+        LRUtilities.put(docTOS, submissionAttributionField, submissionAttribution);
+        LRUtilities.put(doc, TOSField, docTOS);
+        LRUtilities.put(doc, resourceLocatorField, resourceLocator);
+        LRUtilities.put(doc, payloadPlacementField, payloadPlacement);
+        LRUtilities.put(doc, payloadSchemaField, payloadSchema);
+        LRUtilities.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
+        LRUtilities.put(doc, keysField, tags);
+        LRUtilities.put(doc, resourceDataField, resourceData);
         
         if (signed)
         {
@@ -124,6 +162,13 @@ public abstract class LREnvelope
         return doc;
     }
     
+    /**
+     * Adds signing data to the envelope
+     *
+     * @param signingMethod method used for signing this envelope
+     * @param publicKeyLocation location of the public key for the signature on this envelope
+     * @param clearSignedMessage clear signed message created for signing this envelope
+     */
     public void addSigningData(String signingMethod, String publicKeyLocation, String clearSignedMessage)
     {
         this.signingMethod = signingMethod;
