@@ -30,6 +30,18 @@ Government.
 Dependencies
 ============
 
+##bee-encode
+get it from here: http://code.google.com/p/bee-encode
+
+install it to your Maven local repository:
+```
+mvn install:install-file -Dfile=bee-encode-0.2.jar \
+    -DgroupId=org.ardverk \ 
+    -DartifactId=bee-encode \ 
+    -Dversion=0.2 \
+    -Dpackaging=jar \
+    -DgeneratePom=true
+```
  
 
 Versions

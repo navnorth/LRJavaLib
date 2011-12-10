@@ -38,7 +38,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
  * @since 2011-11-17
  * @author Todd Brown / Navigation North
  *      <br>
- *      Copyright © 2011 Navigation North Learning Solutions LLC
+ *      Copyright Â© 2011 Navigation North Learning Solutions LLC
  *      <br>
  *      Licensed under the Apache License, Version 2.0 (the "License"); See LICENSE
  *      and README.md files distributed with this work for additional information
