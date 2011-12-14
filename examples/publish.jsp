@@ -59,20 +59,25 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
     
     // sign the doc
     if (privateKey.length() > 0 && passPhrase.length() > 0 && publicKeyLocation.length() > 0)
-        doc = signerLR.sign(doc);
+    {
+        try {
+            doc = signerLR.sign(doc);
+        }
+        catch (LRException e) {
+            return;
+        }
+    }
     
     // Add envelope to exporter
     exporterLR.addDocument(doc);
     
     // Send data and get responses
     List<LRResponse> responses;
-    try
-    {
-    responses = exporterLR.sendData();
+    try {
+        responses = exporterLR.sendData();
     }
-    catch(LRException e)
-    {
-    return;
+    catch(LRException e) {
+        return;
     }
     
     //out.print("<pre>"+resourceData+"</pre>");

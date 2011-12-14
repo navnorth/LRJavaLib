@@ -49,6 +49,16 @@ String signer = "Signer";
 // In a production environment, you would likely put many envelopes into the exporter before sending the data
 LREnvelope doc = new LRSimpleDocument(rData, resourceDataType, rUrl, curator, provider, keys, payloadPlacement, payloadSchemaURL, payloadSchema, submitter, submitterType, submissionTOS, submissionAttribution, signer);
 
+// Sign envelope
+try
+{
+doc = signerLR.sign(doc);
+}
+catch(LRException E)
+{
+return;
+}
+
 // Add envelope to exporter
 exporterLR.addDocument(doc);
 
