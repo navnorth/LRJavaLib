@@ -76,6 +76,36 @@ public class LRActivity extends LREnvelope
     }
     
     /**
+     * Create a new activity with specified details
+     * This version of the constructor includes tags
+     *
+     * @param resourceLocator value for "resource_locator"
+     * @param submitter value for "submitter"
+     * @param submitterType value for "submitter_type"
+     * @param submissionTOS value for "submission_TOS"
+     * @param submissionAttribution value for "submission_attribution"
+     * @param signer value for "signer"
+     * @param tags value for "keys"
+     */
+    public LRActivity(String resourceLocator, String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer, String[] tags)
+    {
+        this.resourceData = new HashMap<String, Object>();
+        this.resourceDataType = resourceDataTypeValue;
+        this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
+        this.curator = null;
+        this.owner = null;
+        this.tags = LRUtilities.nullifyBadInput(tags);
+        this.payloadPlacement = payloadPlacementValue;
+        this.payloadSchemaLocator = null;
+        this.payloadSchema = payloadSchemaValue;
+        this.submissionTOS = LRUtilities.nullifyBadInput(submissionTOS);
+        this.submissionAttribution = LRUtilities.nullifyBadInput(submissionAttribution);
+        this.submitterType = LRUtilities.nullifyBadInput(submitterType);
+        this.submitter = LRUtilities.nullifyBadInput(submitter);
+        this.signer = LRUtilities.nullifyBadInput(signer);
+    }
+    
+    /**
      * Add a mesure object to the verb within this activity
      *
      * @param measureType The name of the type of measure to be added (required)
