@@ -65,4 +65,9 @@ public class LRSimpleDocument extends LREnvelope
         this.submitter = LRUtilities.nullifyBadInput(submitter);
         this.signer = LRUtilities.nullifyBadInput(signer);
     }
+    
+    public Object getResourceData()
+    {
+        return resourceData;
+    }
 }

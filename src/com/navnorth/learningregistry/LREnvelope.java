@@ -84,12 +84,14 @@ public abstract class LREnvelope
     protected String signingMethod;
     protected String clearSignedMessage;
 
+    protected abstract Object getResourceData();
+    
     /**
      * Builds and returns a map of the envelope data, suitable for signing with the included signer
      *
      * @return map of envelope data, suitable for signing
      */
-    public Map<String, Object> getSignableData()
+    protected Map<String, Object> getSignableData()
     {
         Map<String, Object> doc = new HashMap<String, Object>();
         
@@ -113,7 +115,7 @@ public abstract class LREnvelope
         LRUtilities.put(doc, payloadSchemaField, payloadSchema);
         LRUtilities.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
         LRUtilities.put(doc, keysField, tags);
-        LRUtilities.put(doc, resourceDataField, resourceData);
+        LRUtilities.put(doc, resourceDataField, getResourceData());
         
         return doc;
     }
@@ -123,7 +125,7 @@ public abstract class LREnvelope
      *
      * @return map of the envelope data, including signing data
      */
-    public Map<String, Object> getSendableData()
+    protected Map<String, Object> getSendableData()
     {
         Map<String, Object> doc = new HashMap<String, Object>();
     
@@ -147,7 +149,7 @@ public abstract class LREnvelope
         LRUtilities.put(doc, payloadSchemaField, payloadSchema);
         LRUtilities.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
         LRUtilities.put(doc, keysField, tags);
-        LRUtilities.put(doc, resourceDataField, resourceData);
+        LRUtilities.put(doc, resourceDataField, getResourceData());
         
         if (signed)
         {

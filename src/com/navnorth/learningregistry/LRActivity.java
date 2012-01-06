@@ -105,6 +105,19 @@ public class LRActivity extends LREnvelope
         this.signer = LRUtilities.nullifyBadInput(signer);
     }
     
+    public Object getResourceData()
+    {
+        Map<String, Object> returnableData = new HashMap<String, Object>();
+        returnableData.putAll((HashMap<String, Object>) resourceData);
+        
+        if (related.size() > 0)
+        {
+            returnableData.put("related", related);
+        }
+        
+        return returnableData;
+    }
+    
     /**
      * Add a mesure object to the verb within this activity
      *
