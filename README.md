@@ -27,22 +27,49 @@ policies of the U.S. Department of Education nor does mention of trade
 names, commercial products, or organizations imply endorsement by the U.S. 
 Government.
 
+---
 Dependencies
 ============
-
 ##bee-encode
-get it from here: http://code.google.com/p/bee-encode
 
-install it to your Maven local repository:
+ * [http://code.google.com/p/bee-encode](http://code.google.com/p/bee-encode)
+ * version: 0.2
+ * license: [Apache 2.0](http://www.apache.org/licenses/)
+ * install it to your Maven local repository:```mvn install:install-file -Dfile=bee-encode-0.2.jar -DgroupId=org.ardverk -DartifactId=bee-encode -Dversion=0.2 -Dpackaging=jar -DgeneratePom=true
 ```
-mvn install:install-file -Dfile=bee-encode-0.2.jar \
-    -DgroupId=org.ardverk \ 
-    -DartifactId=bee-encode \ 
-    -Dversion=0.2 \
-    -Dpackaging=jar \
-    -DgeneratePom=true
-```
- 
+
+##bouncy castle
+
+ * [http://www.bouncycastle.org/java.html](http://www.bouncycastle.org/java.html)
+ * version: 1.46
+ * license: [custom, based on MIT X11](http://www.bouncycastle.org/licence.html)
+
+## commons-codec
+
+ * [http://commons.apache.org/codec/](http://commons.apache.org/codec/)
+ * version: 1.3
+ * license: [Apache 2.0](http://www.apache.org/licenses/)
+
+## commons-io
+
+ * [http://commons.apache.org/io/](http://commons.apache.org/io/)
+ * version: 1.32
+ * license: [Apache 2.0](http://www.apache.org/licenses/)
+
+## httpcomponents
+
+ * [http://hc.apache.org/httpcomponents-core-ga](http://hc.apache.org/httpcomponents-core-ga)
+ * version: 4.1
+ * license: [Apache 2.0](http://www.apache.org/licenses/)
+
+## json
+
+ * [http://www.json.org/java/](http://www.json.org/java/)
+ * version: 20090211
+ * license: free, as-is
+
+
+--- 
 
 Versions
 ========        
