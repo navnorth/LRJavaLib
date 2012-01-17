@@ -62,6 +62,7 @@ public class LRExporter
 	// Cofiguration variables
 	private int batchSize;
 	private String url;
+	private boolean publishOverSSL = false;
 	private String publishAuthUser;
 	private String publishAuthPassword;
 	
@@ -87,12 +88,12 @@ public class LRExporter
 	
 	/**
 	 * Creates the exporter object with the specified details
-	 * This version of the constructor sets the exporter up to use SSL
+	 * This version of the constructor sets the exporter up to send a username and password
 	 *
 	 * @param batchSize the number of items to submit per batch to the Learning Registry node
 	 * @param url location of the Learning Registry node to use for export
-	 * @param publishAuthUser user value for SSL
-	 * @param publishAuthPassword password value for SSL
+	 * @param publishAuthUser user value for authentication
+	 * @param publishAuthPassword password value for authentication
 	*/
     public LRExporter(int batchSize, String url, String publishAuthUser, String publishAuthPassword)
     {
@@ -101,6 +102,26 @@ public class LRExporter
 		this.publishAuthUser = publishAuthUser;
 		this.publishAuthPassword = publishAuthPassword;
     }
+
+	/**
+	 * Creates the exporter object with the specified details
+	 * This version of the constructor sets the exporter up to use SSL
+	 *
+	 * @param batchSize the number of items to submit per batch to the Learning Registry node
+	 * @param url location of the Learning Registry node to use for export
+	 * @param publishAuthUser user value for authentication
+	 * @param publishAuthPassword password value for authentication
+	 * @param publishOverSSL whether or not to use SSL for publishing
+	*/
+    public LRExporter(int batchSize, String url, String publishAuthUser, String publishAuthPassword, boolean publishOverSSL)
+    {
+		this.batchSize = batchSize;
+		this.url = url;
+		this.publishAuthUser = publishAuthUser;
+		this.publishAuthPassword = publishAuthPassword;
+		this.publishOverSSL = publishOverSSL;
+    }
+
 
 	/**
 	 * Attempt to configure the exporter with the values used in the constructor
@@ -129,15 +150,15 @@ public class LRExporter
 	
 		this.batchSize = batchSize;
 		
-		// If both authorization values are not present, use the non-SSL url
-		if (publishAuthUser == null || publishAuthPassword == null)
-		{
-			this.url = publishUrlPrefix + url + publishUrlPath;
-		}
-		// Otherwise, use the SSL url
-		else
+		// if SSL, use SSL prefix
+		if (publishOverSSL)
 		{
 			this.url = publishSSLUrlPrefix + url + publishUrlPath;
+		}
+		// Otherwise, use the non-SSL url
+		else
+		{
+			this.url = publishUrlPrefix + url + publishUrlPath;
 		}
 		
 		this.publishAuthUser = publishAuthUser;
@@ -400,7 +421,7 @@ public class LRExporter
 		this.publishAuthPassword = publishAuthPassword;
 		configured = false;
 	}
-	
+
 	/**
 	 * Get the publishAuthPassword value
 	 *
@@ -409,5 +430,27 @@ public class LRExporter
 	public String getPublishAuthPassword()
 	{
 		return publishAuthPassword;
+	}
+	
+	/**
+	 * Get the publishOverSSL value
+	 *
+	 * @return publishOverSSL value
+	 */
+	public boolean getPublishOverSSL()
+	{
+		return publishOverSSL;
+	}
+
+	/**
+	 * Sets the publishOverSSL value
+	 * Must call "configure" on exporter after setting this
+	 *
+	 * @param publishOverSSL value
+	 */
+	public void setPublishOverSSL(boolean publishOverSSL)
+	{
+		this.publishOverSSL = publishOverSSL;
+		configured = false;
 	}
 }
