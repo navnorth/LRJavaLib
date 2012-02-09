@@ -108,13 +108,16 @@ public class LRActivity extends LREnvelope
     public Object getResourceData()
     {
         Map<String, Object> returnableData = new HashMap<String, Object>();
-        returnableData.putAll((HashMap<String, Object>) resourceData);
+		Map<String, Object> activityData = new HashMap<String, Object>();
+		
+        activityData.putAll((HashMap<String, Object>) resourceData);
         
         if (related.size() > 0)
         {
-            returnableData.put("related", related);
+            activityData.put("related", related);
         }
         
+		returnableData.put("activity", activityData);
         return returnableData;
     }
     
