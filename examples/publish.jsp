@@ -2,8 +2,8 @@
 
 <%
 // default node and signing values
-String nodeDomain = (request.getParameter("nodeDomain") != null) ? request.getParameter("nodeDomain") : "lrtest02.learningregistry.org"; 
-String publicKeyLocation = (request.getParameter("publicKeyLocation") != null) ? request.getParameter("publicKeyLocation") : "keyserver.pgp.com/vkd/DownloadKey.event?keyid=0x8E155268359114B4";
+String nodeDomain = (request.getParameter("nodeDomain") != null) ? request.getParameter("nodeDomain") : "sandbox.learningregistry.org"; 
+String publicKeyLocation = (request.getParameter("publicKeyLocation") != null) ? request.getParameter("publicKeyLocation") : "http://keyserver.pgp.com/vkd/DownloadKey.event?keyid=0x8E155268359114B4";
 String privateKey = (request.getParameter("privateKey") != null) ? request.getParameter("privateKey") : ""; 
 String passPhrase = (request.getParameter("passPhrase") != null) ? request.getParameter("passPhrase") : ""; 
 
@@ -12,8 +12,8 @@ String resourceDataType = (request.getParameter("resourceDataType") != null) ? r
 String payloadPlacement = (request.getParameter("payloadPlacement") != null) ? request.getParameter("payloadPlacement") : "inline"; 
 String payloadSchemaURL = "";  // deprecated, but still in the LR lib
 
-// Payload schema
-String[] payloadSchema = (request.getParameter("payloadSchema").split(",") != null) ? request.getParameter("payloadSchema").split(",") : new String[] {"LR Paradata 1.0"};
+// Payload schema - could use StringUtils() from apache commons to join, but we're trying to cut down on dependencies
+String[] payloadSchema = (request.getParameter("payloadSchema") != null) ? request.getParameter("payloadSchema").split(",") : new String[] {"LR Paradata 1.0"};
 String payloadSchemaString = "";
 for (int i = 0; i < payloadSchema.length; i++)
 {
@@ -28,8 +28,8 @@ String defaultResData = "{\"activity\":{\"verb\":{\"action\":\"viewed\",\"measur
 String resourceData = (request.getParameter("resourceData") != null) ? request.getParameter("resourceData") : defaultResData;
 String resourceURL = (request.getParameter("resourceURL") != null) ? request.getParameter("resourceURL") : "http://google.com"; 
 
-// Keywords
-String[] keywords = (request.getParameter("keywords").split(",") != null) ? request.getParameter("keywords").split(",") : new String[] {"lr-test-data"};
+// Keywords - could use StringUtils() from apache commons to join, but we're trying to cut down on dependencies
+String[] keywords = (request.getParameter("keywords") != null) ? request.getParameter("keywords").split(",") : new String[] {"lr-test-data"};
 String keywordString = "";
 for (int i = 0; i < keywords.length; i++)
 {
@@ -193,7 +193,7 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
     <b>Public Key Location:</b> <input type="text" name="publicKeyLocation" value="<%= publicKeyLocation %>" size="60" /><br />
     <b>Pass Phrase:</b> <input type="text" name="passPhrase" value="<%= passPhrase %>" size="60" /><br />
     <b>Private Key:</b> <br />
-    <textarea name="privateKey" rows="5" cols="60"><%= privateKey %></textarea><br />
+    <textarea name="privateKey" rows="5" cols="70"><%= privateKey %></textarea><br />
     
 
     <input type="submit" name="publishNow" value="Publish to Node" />
