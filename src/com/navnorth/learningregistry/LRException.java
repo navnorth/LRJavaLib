@@ -32,6 +32,7 @@ public class LRException extends Exception
     public static final int UNKNOWN = 0;
     public static final int NO_DATA = 1;
     public static final int NO_LOCATOR = 2;
+	public static final int INVALID_JSON = 3;
     public static final int NOT_CONFIGURED = 4;
     public static final int BENCODE_FAILED = 5;
     public static final int SIGNING_FAILED = 6;
@@ -43,6 +44,7 @@ public class LRException extends Exception
     public static final int NO_RESPONSE = 12;
     public static final int INVALID_RESPONSE = 13;
     public static final int JSON_FAILED = 14;
+	public static final int INVALID_JSON_OBJECT = 15;
     
     private Integer code;
     
@@ -87,6 +89,8 @@ public class LRException extends Exception
             return "A document cannot be added without resource data.";
         else if (code == NO_LOCATOR)
             return "A document cannot be added without a resource locator.";
+		else if (code == INVALID_JSON)
+			return "The provided JSON could not be compiled. Check that the JSON provided is valid.";
         else if (code == NOT_CONFIGURED)
             return "The exporter must be configured before this action can be taken.";
         else if (code == BENCODE_FAILED)
@@ -109,7 +113,7 @@ public class LRException extends Exception
             return "The response from the Learning Registry node did not match the form of an expected response.";
         else if (code == JSON_FAILED)
             return "The batch of documents could not be converted to a JSON string. Check that no invalid characters were included in the resource data of any document.";
-        else
+		else
             return "An unknown error has ocurred";
     }
 }

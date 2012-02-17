@@ -55,7 +55,7 @@ public class LRSimpleDocument extends LREnvelope
         this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
         this.curator = LRUtilities.nullifyBadInput(curator);
         this.owner = LRUtilities.nullifyBadInput(owner);
-        this.tags = LRUtilities.nullifyBadInput(tags);
+        this.tags = LRUtilities.removeDuplicates(tags);
         this.payloadPlacement = LRUtilities.nullifyBadInput(payloadPlacement);
         this.payloadSchemaLocator = LRUtilities.nullifyBadInput(payloadSchemaLocator);
         this.payloadSchema = LRUtilities.nullifyBadInput(payloadSchema);

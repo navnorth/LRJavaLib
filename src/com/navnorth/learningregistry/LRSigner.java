@@ -51,7 +51,7 @@ import org.ardverk.coding.*;
  */
 public class LRSigner
 {
-	private static final String pgpRegex = ".*-----BEGIN PGP PRIVATE KEY BLOCK-----.*-----END PGP PRIVATE KEY BLOCK-----.*";
+	private static final String pgpRegex = "(?s).*-----BEGIN PGP PRIVATE KEY BLOCK-----.*-----END PGP PRIVATE KEY BLOCK-----.*";
 	private static final String signingMethod = "LR-PGP.1.0";
 
 	private String publicKeyLocation;
@@ -157,6 +157,12 @@ public class LRSigner
 	*/
 	private String signEnvelopeData(String message) throws LRException
 	{
+		// Throw an exception if any of the required fields are null
+		if (passPhrase == null || publicKeyLocation == null || privateKey == null)
+		{
+			throw new LRException(LRException.NULL_FIELD);
+		}
+	
 		// Get an InputStream for the private key
 		InputStream privateKeyStream = getPrivateKeyStream(privateKey);
 		

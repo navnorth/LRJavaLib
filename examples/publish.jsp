@@ -11,15 +11,34 @@ String passPhrase = (request.getParameter("passPhrase") != null) ? request.getPa
 String resourceDataType = (request.getParameter("resourceDataType") != null) ? request.getParameter("resourceDataType") : "paradata"; 
 String payloadPlacement = (request.getParameter("payloadPlacement") != null) ? request.getParameter("payloadPlacement") : "inline"; 
 String payloadSchemaURL = "";  // deprecated, but still in the LR lib
-// only allow 1 payload schema in this example
-String[] payloadSchema = new String[] {(request.getParameter("payloadSchema") != null) ? request.getParameter("payloadSchema") : "LR Paradata 1.0"};
+
+// Payload schema
+String[] payloadSchema = (request.getParameter("payloadSchema").split(",") != null) ? request.getParameter("payloadSchema").split(",") : new String[] {"LR Paradata 1.0"};
+String payloadSchemaString = "";
+for (int i = 0; i < payloadSchema.length; i++)
+{
+	payloadSchemaString += payloadSchema[i];
+	if (i < payloadSchema.length - 1)
+	{
+		payloadSchemaString += ",";
+	}
+}
 
 String defaultResData = "{\"activity\":{\"verb\":{\"action\":\"viewed\",\"measure\":{\"measureType\":\"count\",\"value\":\"1\"},\"context\":{},\"date\":\"2011-11-01\"},\"object\":{\"id\":\"http://google.com\"}}}";
 String resourceData = (request.getParameter("resourceData") != null) ? request.getParameter("resourceData") : defaultResData;
 String resourceURL = (request.getParameter("resourceURL") != null) ? request.getParameter("resourceURL") : "http://google.com"; 
 
-// only allow 1 payload schema in this example
-String[] keywords = new String[] {(request.getParameter("keywords") != null) ? request.getParameter("keywords") : "lr-test-data"};
+// Keywords
+String[] keywords = (request.getParameter("keywords").split(",") != null) ? request.getParameter("keywords").split(",") : new String[] {"lr-test-data"};
+String keywordString = "";
+for (int i = 0; i < keywords.length; i++)
+{
+	keywordString += keywords[i];
+	if (i < keywords.length - 1)
+	{
+		keywordString += ",";
+	}
+}
 
 // Identity data
 String signer = (request.getParameter("signer") != null) ? request.getParameter("signer") : "";
@@ -37,6 +56,8 @@ String submissionAttribution = (request.getParameter("submissionAttribution") !=
 // if form submitted.
 if (request.getParameter("publishNow") != null && request.getParameter("publishNow").length() > 0) 
 {    
+	// List of exceptions for display
+	List<LRException> exceptions = new ArrayList<LRException>();
     
     // Setup signer
     LRSigner signerLR = new LRSigner(publicKeyLocation, privateKey, passPhrase);
@@ -50,13 +71,21 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
         exporterLR.configure();
     } 
     catch (LRException e) {
-        return;
+		exceptions.add(e);
     }
     
     // Build resource envelope
     // In a production environment, you would likely put many envelopes into the exporter before sending the data
-    LREnvelope doc = new LRSimpleDocument(resourceData, resourceDataType, resourceURL, curator, provider, keywords, payloadPlacement, payloadSchemaURL, payloadSchema, submitter, submitterType, submissionTOS, submissionAttribution, signer);
     
+	LREnvelope doc = null;
+	
+	try {
+		doc = new LRJSONDocument(resourceData, resourceDataType, resourceURL, curator, provider, keywords, payloadPlacement, payloadSchemaURL, payloadSchema, submitter, submitterType, submissionTOS, submissionAttribution, signer);
+    }
+	catch (LRException e) {
+		exceptions.add(e);
+	}
+	
     // sign the doc
     if (privateKey.length() > 0 && passPhrase.length() > 0 && publicKeyLocation.length() > 0)
     {
@@ -64,53 +93,71 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
             doc = signerLR.sign(doc);
         }
         catch (LRException e) {
-            return;
+            exceptions.add(e);
         }
     }
     
-    // Add envelope to exporter
-    exporterLR.addDocument(doc);
-    
-    // Send data and get responses
-    List<LRResponse> responses;
-    try {
-        responses = exporterLR.sendData();
-    }
-    catch(LRException e) {
-        return;
-    }
-    
-    //out.print("<pre>"+resourceData+"</pre>");
-    
-    // Parse responses
-    out.print("<div style=\"background-color:#98afc7;margin:10px;padding:10px\"><h1>Publish Results</h2>");
-    for (LRResponse res : responses)
-    {
-        out.print("<h2>Batch Results</h2>");
-        out.print("Status Code: " + res.getStatusCode() + "<br/>");
-        out.print("Status Reason: " + res.getStatusReason() + "<br/>");
-        out.print("Batch Success: " + res.getBatchSuccess() + "<br/>");
-        out.print("Batch Response: " + res.getBatchResponse() + "<br/><br/>");
+	//out.print("<pre>"+resourceData+"</pre>");
+	
+	
+	out.print("<div style=\"background-color:#98afc7;margin:10px;padding:10px\"><h1>Publish Results</h2>");
+	
+	if (exceptions.size() > 0)
+	{
+		// Output exceptions
+		out.print("<h2>Exceptions</h2>");
+		for(LRException e : exceptions)
+		{
+			out.print(e.getMessage());
+		}
+		out.print("<h2>No Resources were Published</h2>");
+	}
+	else
+	{
+		// Add envelope to exporter
+		exporterLR.addDocument(doc);
+		
+		// Send data and get responses
+		List<LRResponse> responses = null;
+		try {
+			responses = exporterLR.sendData();
+		}
+		catch(LRException e) {
+			exceptions.add(e);
+		}
+		
+		// Parse responses
+		if (responses != null)
+		{
+			for (LRResponse res : responses)
+			{
+				out.print("<h2>Batch Results</h2>");
+				out.print("Status Code: " + res.getStatusCode() + "<br/>");
+				out.print("Status Reason: " + res.getStatusReason() + "<br/>");
+				out.print("Batch Success: " + res.getBatchSuccess() + "<br/>");
+				out.print("Batch Response: " + res.getBatchResponse() + "<br/><br/>");
 
-        out.print("<h3>Published Resource(s)</h3>");        
-        for(String id : res.getResourceSuccess())
-        {
-            out.print("Id: <a href=\"http://" + nodeDomain + "/harvest/getrecord?by_doc_ID=T&request_ID=" + id + "\" target=_\"blank\">" + id + "</a><br/>");
-        }
-        
-        if (!res.getResourceFailure().isEmpty())
-        {
-            out.print("<br/>");
-            out.print("<h3>Publish Errors</h3>");
-            
-            for(String message : res.getResourceFailure()) 
-            {
-                out.print("Error: " + message);
-                out.print("<br/>");
-            }
-        }
-    }
-    out.print("</div><hr />");
+				out.print("<h3>Published Resource(s)</h3>");        
+				for(String id : res.getResourceSuccess())
+				{
+					out.print("Id: <a href=\"http://" + nodeDomain + "/harvest/getrecord?by_doc_ID=T&request_ID=" + id + "\" target=_\"blank\">" + id + "</a><br/>");
+				}
+				
+				if (!res.getResourceFailure().isEmpty())
+				{
+					out.print("<br/>");
+					out.print("<h3>Publish Errors</h3>");
+					
+					for(String message : res.getResourceFailure()) 
+					{
+						out.print("Error: " + message);
+						out.print("<br/>");
+					}
+				}
+			}
+		}
+	}
+	out.print("</div><hr />");
 }
 
 %>
@@ -126,12 +173,12 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
     <textarea name="resourceData" rows="5" cols="60"><%= resourceData %></textarea>
     <hr />
 
-    <b>Payload Schema:</b> <input type="text" name="payloadSchema" value="<%= payloadSchema[0] %>" size="60" /><br />
+    <b>Payload Schema:</b> <input type="text" name="payloadSchema" value="<%= payloadSchemaString %>" size="60" /> (comma-delimited)<br />
     <b>Resource Data Type:</b> <input type="text" name="resourceDataType" value="<%= resourceDataType %>" size="60" /><br />
     <b>Payload Placement:</b> <input type="text" name="payloadPlacement" value="<%= payloadPlacement %>" size="60" /><br />
     
     <hr />
-    <b>keywords:</b> <input type="text" name="keywords" value="<%= keywords[0] %>" size="60" /> (comma-delimited)<br />
+    <b>keywords:</b> <input type="text" name="keywords" value="<%= keywordString %>" size="60" /> (comma-delimited)<br />
     
     <hr />    
     <b>Signer:</b> <input type="text" name="signer" value="<%= signer %>" size="60" /><br />

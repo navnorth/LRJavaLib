@@ -14,6 +14,9 @@
 package com.navnorth.learningregistry;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
 
 /**
  * Utility functions used by various Learning Registry classes
@@ -32,7 +35,7 @@ public class LRUtilities
 {
     private static final String emptyRegex = "\\s*";
     private static final String xmlRegex = "<\\?xml.*\\?>";
-    private static final String cleanRegex = "[^a-zA-Z0-9<>/:-;&\\?\"=\\s-\\._@\\$%]";
+    private static final String cleanRegex = "[^a-zA-Z0-9<>{}/:-;&\\?\"=\\s-\\._@\\$%]";
     
     /**
      * Clean a string so that it only contains characters that will be accepted by a Learning Registry node
@@ -60,6 +63,28 @@ public class LRUtilities
                 return null;
             }
             return input.trim();
+        }
+        return null;
+    }
+	
+	/**
+     * Returns a valid string array without dulicates or null, if empty
+     *
+     * @param input original string array
+     * @return resultant string array
+     */
+    public static String[] removeDuplicates(String[] input)
+    {
+        if (input != null)
+        {
+            if (input.length > 0)
+            {
+				Set<String> inputSet = new HashSet<String>(Arrays.asList(input));
+				if (inputSet.size() > 0)
+				{
+					return inputSet.toArray(new String[inputSet.size()]);
+				}
+            }
         }
         return null;
     }

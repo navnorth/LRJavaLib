@@ -94,7 +94,7 @@ public class LRActivity extends LREnvelope
         this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
         this.curator = null;
         this.owner = null;
-        this.tags = LRUtilities.nullifyBadInput(tags);
+        this.tags = LRUtilities.removeDuplicates(tags);
         this.payloadPlacement = payloadPlacementValue;
         this.payloadSchemaLocator = null;
         this.payloadSchema = payloadSchemaValue;
