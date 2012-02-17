@@ -68,7 +68,12 @@ Dependencies
  * version: 20090211
  * license: free, as-is
 
+## jackson
 
+ * [http://jackson.codehaus.org/](http://jackson.codehaus.org/)
+ * version: 1.9.4
+ * license: [Apache 2.0](http://www.apache.org/licenses/) or [LGPL 2.1](http://www.gnu.org/licenses/lgpl.html)
+ 
 --- 
 
 Versions
