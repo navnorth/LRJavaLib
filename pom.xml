@@ -68,12 +68,21 @@
             <artifactId>json</artifactId>
             <version>20090211</version>
         </dependency>
-
         <dependency>
             <groupId>org.ardverk</groupId>
             <artifactId>bee-encode</artifactId>
             <version>0.2</version>
         </dependency>
+		<dependency>
+		  <groupId>org.codehaus.jackson</groupId>
+		  <artifactId>jackson-core-asl</artifactId>
+		  <version>1.9.4</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.codehaus.jackson</groupId>
+		  <artifactId>jackson-mapper-asl</artifactId>
+		  <version>1.9.4</version>
+		</dependency>
         
     </dependencies>
     
