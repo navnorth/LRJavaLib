@@ -13,7 +13,7 @@ String payloadPlacement = (request.getParameter("payloadPlacement") != null) ? r
 String payloadSchemaURL = "";  // deprecated, but still in the LR lib
 
 // Payload schema - could use StringUtils() from apache commons to join, but we're trying to cut down on dependencies
-String[] payloadSchema = (request.getParameter("payloadSchema") != null) ? request.getParameter("payloadSchema").split(",") : new String[] {"LR Paradata 1.0"};
+String[] payloadSchema = (request.getParameter("payloadSchema") != null) ? request.getParameter("payloadSchema").split(",", -1) : new String[] {"LR Paradata 1.0"};
 String payloadSchemaString = "";
 for (int i = 0; i < payloadSchema.length; i++)
 {
@@ -29,7 +29,7 @@ String resourceData = (request.getParameter("resourceData") != null) ? request.g
 String resourceURL = (request.getParameter("resourceURL") != null) ? request.getParameter("resourceURL") : "http://google.com"; 
 
 // Keywords - could use StringUtils() from apache commons to join, but we're trying to cut down on dependencies
-String[] keywords = (request.getParameter("keywords") != null) ? request.getParameter("keywords").split(",") : new String[] {"lr-test-data"};
+String[] keywords = (request.getParameter("keywords") != null) ? request.getParameter("keywords").split(",", -1) : new String[] {"lr-test-data"};
 String keywordString = "";
 for (int i = 0; i < keywords.length; i++)
 {
