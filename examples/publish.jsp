@@ -2,7 +2,7 @@
 
 <%
 // default node and signing values
-String nodeDomain = (request.getParameter("nodeDomain") != null) ? request.getParameter("nodeDomain") : "sandbox.learningregistry.org"; 
+String nodeHost = (request.getParameter("nodeHost") != null) ? request.getParameter("nodeHost") : "sandbox.learningregistry.org"; 
 String publicKeyLocation = (request.getParameter("publicKeyLocation") != null) ? request.getParameter("publicKeyLocation") : "http://keyserver.pgp.com/vkd/DownloadKey.event?keyid=0x8E155268359114B4";
 String privateKey = (request.getParameter("privateKey") != null) ? request.getParameter("privateKey") : ""; 
 String passPhrase = (request.getParameter("passPhrase") != null) ? request.getParameter("passPhrase") : ""; 
@@ -64,7 +64,7 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
     
     // Setup exporter
     int batchSize = 1;
-    LRExporter exporterLR = new LRExporter(batchSize, nodeDomain);
+    LRExporter exporterLR = new LRExporter(batchSize, nodeHost);
     
     // Configure exporter
     try {
@@ -140,7 +140,7 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
 				out.print("<h3>Published Resource(s)</h3>");        
 				for(String id : res.getResourceSuccess())
 				{
-					out.print("Id: <a href=\"http://" + nodeDomain + "/harvest/getrecord?by_doc_ID=T&request_ID=" + id + "\" target=_\"blank\">" + id + "</a><br/>");
+					out.print("Id: <a href=\"http://" + nodeHost + "/harvest/getrecord?by_doc_ID=T&request_ID=" + id + "\" target=_\"blank\">" + id + "</a><br/>");
 				}
 				
 				if (!res.getResourceFailure().isEmpty())
@@ -165,7 +165,7 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
 
 
 <form method="post" action="publish.jsp">
-    <b>Node domain:</b> <input type="text" name="nodeDomain" value="<%= nodeDomain %>" size="60" /><br />
+    <b>Node Host:</b> <input type="text" name="nodeHost" value="<%= nodeHost %>" size="60" /><br />
     <hr />
     
     <b>Resource URL:</b> <input type="text" name="resourceURL" value="<%= resourceURL %>" size="60" /><br />

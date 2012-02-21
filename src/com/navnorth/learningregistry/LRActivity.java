@@ -13,6 +13,8 @@
  */
 package com.navnorth.learningregistry;
 
+import com.navnorth.learningregistry.util.StringUtil;
+
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,7 +30,7 @@ import java.util.ArrayList;
  * Utility class for building activity paradata for the Learning Registry Exporter
  * The map built by the getData() function is appropriate to use as resource data in the exporter
  *
- * @version 0.1
+ * @version 0.1.1
  * @since 2011-11-17
  * @author Todd Brown / Navigation North
  *      <br>
@@ -61,18 +63,18 @@ public class LRActivity extends LREnvelope
     {
         this.resourceData = new HashMap<String, Object>();
         this.resourceDataType = resourceDataTypeValue;
-        this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
+        this.resourceLocator = StringUtil.nullifyBadInput(resourceLocator);
         this.curator = null;
         this.owner = null;
         this.tags = null;
         this.payloadPlacement = payloadPlacementValue;
         this.payloadSchemaLocator = null;
         this.payloadSchema = payloadSchemaValue;
-        this.submissionTOS = LRUtilities.nullifyBadInput(submissionTOS);
-        this.submissionAttribution = LRUtilities.nullifyBadInput(submissionAttribution);
-        this.submitterType = LRUtilities.nullifyBadInput(submitterType);
-        this.submitter = LRUtilities.nullifyBadInput(submitter);
-        this.signer = LRUtilities.nullifyBadInput(signer);
+        this.submissionTOS = StringUtil.nullifyBadInput(submissionTOS);
+        this.submissionAttribution = StringUtil.nullifyBadInput(submissionAttribution);
+        this.submitterType = StringUtil.nullifyBadInput(submitterType);
+        this.submitter = StringUtil.nullifyBadInput(submitter);
+        this.signer = StringUtil.nullifyBadInput(signer);
     }
     
     /**
@@ -91,25 +93,25 @@ public class LRActivity extends LREnvelope
     {
         this.resourceData = new HashMap<String, Object>();
         this.resourceDataType = resourceDataTypeValue;
-        this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
+        this.resourceLocator = StringUtil.nullifyBadInput(resourceLocator);
         this.curator = null;
         this.owner = null;
-        this.tags = LRUtilities.removeDuplicates(tags);
+        this.tags = StringUtil.removeDuplicates(tags);
         this.payloadPlacement = payloadPlacementValue;
         this.payloadSchemaLocator = null;
         this.payloadSchema = payloadSchemaValue;
-        this.submissionTOS = LRUtilities.nullifyBadInput(submissionTOS);
-        this.submissionAttribution = LRUtilities.nullifyBadInput(submissionAttribution);
-        this.submitterType = LRUtilities.nullifyBadInput(submitterType);
-        this.submitter = LRUtilities.nullifyBadInput(submitter);
-        this.signer = LRUtilities.nullifyBadInput(signer);
+        this.submissionTOS = StringUtil.nullifyBadInput(submissionTOS);
+        this.submissionAttribution = StringUtil.nullifyBadInput(submissionAttribution);
+        this.submitterType = StringUtil.nullifyBadInput(submitterType);
+        this.submitter = StringUtil.nullifyBadInput(submitter);
+        this.signer = StringUtil.nullifyBadInput(signer);
     }
     
     public Object getResourceData()
     {
         Map<String, Object> returnableData = new HashMap<String, Object>();
-		Map<String, Object> activityData = new HashMap<String, Object>();
-		
+        Map<String, Object> activityData = new HashMap<String, Object>();
+        
         activityData.putAll((HashMap<String, Object>) resourceData);
         
         if (related.size() > 0)
@@ -117,7 +119,7 @@ public class LRActivity extends LREnvelope
             activityData.put("related", related);
         }
         
-		returnableData.put("activity", activityData);
+        returnableData.put("activity", activityData);
         return returnableData;
     }
     

@@ -3,8 +3,8 @@
 <%
 // Setup exporter
 int batchSize = 100;
-String url = "lrtest02.learningregistry.org";
-LRExporter exporterLR = new LRExporter(batchSize, url);
+String nodeHost = "sandbox.learningregistry.org";
+LRExporter exporterLR = new LRExporter(batchSize, nodeHost);
 
 // Configure exporter
 try

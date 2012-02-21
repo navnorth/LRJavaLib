@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navnorth.learningregistry;
+package com.navnorth.learningregistry.util;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -34,7 +34,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 /**
  * Self signing factory
  *
- * @version 0.1
+ * @version 0.1.1
  * @since 2011-11-17
  * @author Todd Brown / Navigation North
  *      <br>
@@ -44,9 +44,9 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
  *      and README.md files distributed with this work for additional information
  *      regarding copyright ownership.
  */
-public class LRSelfSignSSLSocketFactory extends SSLSocketFactory {
+public class SelfSignSSLSocketFactory extends SSLSocketFactory {
     SSLContext sslContext = SSLContext.getInstance("TLS");
-    public LRSelfSignSSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+    public SelfSignSSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
         super(truststore);
         TrustManager tm = new X509TrustManager() {
             public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {

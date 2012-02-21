@@ -32,7 +32,7 @@ public class LRException extends Exception
     public static final int UNKNOWN = 0;
     public static final int NO_DATA = 1;
     public static final int NO_LOCATOR = 2;
-	public static final int INVALID_JSON = 3;
+    public static final int INVALID_JSON = 3;
     public static final int NOT_CONFIGURED = 4;
     public static final int BENCODE_FAILED = 5;
     public static final int SIGNING_FAILED = 6;
@@ -44,7 +44,9 @@ public class LRException extends Exception
     public static final int NO_RESPONSE = 12;
     public static final int INVALID_RESPONSE = 13;
     public static final int JSON_FAILED = 14;
-	public static final int INVALID_JSON_OBJECT = 15;
+    public static final int JSON_IMPORT_FAILED = 15;
+    public static final int INVALID_JSON_OBJECT = 16;
+    public static final int IMPORT_FAILED = 17;
     
     private Integer code;
     
@@ -89,8 +91,8 @@ public class LRException extends Exception
             return "A document cannot be added without resource data.";
         else if (code == NO_LOCATOR)
             return "A document cannot be added without a resource locator.";
-		else if (code == INVALID_JSON)
-			return "The provided JSON could not be compiled. Check that the JSON provided is valid.";
+        else if (code == INVALID_JSON)
+            return "The provided JSON could not be compiled. Check that the JSON provided is valid.";
         else if (code == NOT_CONFIGURED)
             return "The exporter must be configured before this action can be taken.";
         else if (code == BENCODE_FAILED)
@@ -112,8 +114,12 @@ public class LRException extends Exception
         else if (code == INVALID_RESPONSE)
             return "The response from the Learning Registry node did not match the form of an expected response.";
         else if (code == JSON_FAILED)
-            return "The batch of documents could not be converted to a JSON string. Check that no invalid characters were included in the resource data of any document.";
-		else
+            return "The batch of documents could not be converted to a JSON string. Check that no invalid characters were included in the data of any document.";
+        else if (code == JSON_IMPORT_FAILED)
+            return "The batch of documents could not be converted to a JSON string. Check that the node did not return an error or invalid JSON.";
+        else if (code == IMPORT_FAILED)
+            return "Capturing data from the node failed. Please check that the node is running and returning results properly.";
+        else
             return "An unknown error has ocurred";
     }
 }

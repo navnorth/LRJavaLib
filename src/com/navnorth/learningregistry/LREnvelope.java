@@ -13,13 +13,16 @@
  */
 package com.navnorth.learningregistry;
 
+import com.navnorth.learningregistry.util.MapUtil;
+
+import java.util.Map;
 import java.util.Map;
 import java.util.HashMap;
 
 /**
  * Envelope for data to export to a learning registry node
  *
- * @version 0.1
+ * @version 0.1.1
  * @since 2011-12-06
  * @author Todd Brown / Navigation North
  *      <br>
@@ -95,27 +98,27 @@ public abstract class LREnvelope
     {
         Map<String, Object> doc = new HashMap<String, Object>();
         
-        LRUtilities.put(doc, docTypeField, docType);
-        LRUtilities.put(doc, docVersionField, docVersion);
-        LRUtilities.put(doc, activeField, active);
-        LRUtilities.put(doc, resourceDataTypeField, resourceDataType);
+        MapUtil.put(doc, docTypeField, docType);
+        MapUtil.put(doc, docVersionField, docVersion);
+        MapUtil.put(doc, activeField, active);
+        MapUtil.put(doc, resourceDataTypeField, resourceDataType);
         Map<String, Object> docId = new HashMap<String, Object>();
-        LRUtilities.put(docId, submitterTypeField, submitterType);
-        LRUtilities.put(docId, submitterField, submitter);
-        LRUtilities.put(docId, curatorField, curator);
-        LRUtilities.put(docId, ownerField, owner);
-        LRUtilities.put(docId, signerField, signer);
-        LRUtilities.put(doc, identityField, docId);
+        MapUtil.put(docId, submitterTypeField, submitterType);
+        MapUtil.put(docId, submitterField, submitter);
+        MapUtil.put(docId, curatorField, curator);
+        MapUtil.put(docId, ownerField, owner);
+        MapUtil.put(docId, signerField, signer);
+        MapUtil.put(doc, identityField, docId);
         Map<String, Object> docTOS = new HashMap<String, Object>();
-        LRUtilities.put(docTOS, submissionTOSField, submissionTOS);
-        LRUtilities.put(docTOS, submissionAttributionField, submissionAttribution);
-        LRUtilities.put(doc, TOSField, docTOS);
-        LRUtilities.put(doc, resourceLocatorField, resourceLocator);
-        LRUtilities.put(doc, payloadPlacementField, payloadPlacement);
-        LRUtilities.put(doc, payloadSchemaField, payloadSchema);
-        LRUtilities.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
-        LRUtilities.put(doc, keysField, tags);
-        LRUtilities.put(doc, resourceDataField, getResourceData());
+        MapUtil.put(docTOS, submissionTOSField, submissionTOS);
+        MapUtil.put(docTOS, submissionAttributionField, submissionAttribution);
+        MapUtil.put(doc, TOSField, docTOS);
+        MapUtil.put(doc, resourceLocatorField, resourceLocator);
+        MapUtil.put(doc, payloadPlacementField, payloadPlacement);
+        MapUtil.put(doc, payloadSchemaField, payloadSchema);
+        MapUtil.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
+        MapUtil.put(doc, keysField, tags);
+        MapUtil.put(doc, resourceDataField, getResourceData());
         
         return doc;
     }
@@ -129,36 +132,36 @@ public abstract class LREnvelope
     {
         Map<String, Object> doc = new HashMap<String, Object>();
     
-        LRUtilities.put(doc, docTypeField, docType);
-        LRUtilities.put(doc, docVersionField, docVersion);
-        LRUtilities.put(doc, activeField, true);
-        LRUtilities.put(doc, resourceDataTypeField, resourceDataType);
+        MapUtil.put(doc, docTypeField, docType);
+        MapUtil.put(doc, docVersionField, docVersion);
+        MapUtil.put(doc, activeField, true);
+        MapUtil.put(doc, resourceDataTypeField, resourceDataType);
         Map<String, Object> docId = new HashMap<String, Object>();
-        LRUtilities.put(docId, submitterTypeField, submitterType);
-        LRUtilities.put(docId, submitterField, submitter);
-        LRUtilities.put(docId, curatorField, curator);
-        LRUtilities.put(docId, ownerField, owner);
-        LRUtilities.put(docId, signerField, signer);
-        LRUtilities.put(doc, identityField, docId);
+        MapUtil.put(docId, submitterTypeField, submitterType);
+        MapUtil.put(docId, submitterField, submitter);
+        MapUtil.put(docId, curatorField, curator);
+        MapUtil.put(docId, ownerField, owner);
+        MapUtil.put(docId, signerField, signer);
+        MapUtil.put(doc, identityField, docId);
         Map<String, Object> docTOS = new HashMap<String, Object>();
-        LRUtilities.put(docTOS, submissionTOSField, submissionTOS);
-        LRUtilities.put(docTOS, submissionAttributionField, submissionAttribution);
-        LRUtilities.put(doc, TOSField, docTOS);
-        LRUtilities.put(doc, resourceLocatorField, resourceLocator);
-        LRUtilities.put(doc, payloadPlacementField, payloadPlacement);
-        LRUtilities.put(doc, payloadSchemaField, payloadSchema);
-        LRUtilities.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
-        LRUtilities.put(doc, keysField, tags);
-        LRUtilities.put(doc, resourceDataField, getResourceData());
+        MapUtil.put(docTOS, submissionTOSField, submissionTOS);
+        MapUtil.put(docTOS, submissionAttributionField, submissionAttribution);
+        MapUtil.put(doc, TOSField, docTOS);
+        MapUtil.put(doc, resourceLocatorField, resourceLocator);
+        MapUtil.put(doc, payloadPlacementField, payloadPlacement);
+        MapUtil.put(doc, payloadSchemaField, payloadSchema);
+        MapUtil.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
+        MapUtil.put(doc, keysField, tags);
+        MapUtil.put(doc, resourceDataField, getResourceData());
         
         if (signed)
         {
             Map<String, Object> sig = new HashMap<String, Object>();
             String[] keys = {publicKeyLocation};
-            LRUtilities.put(sig, "key_location", keys);
-            LRUtilities.put(sig, "signing_method", signingMethod);
-            LRUtilities.put(sig, "signature", clearSignedMessage);
-            LRUtilities.put(doc, "digital_signature", sig);
+            MapUtil.put(sig, "key_location", keys);
+            MapUtil.put(sig, "signing_method", signingMethod);
+            MapUtil.put(sig, "signature", clearSignedMessage);
+            MapUtil.put(doc, "digital_signature", sig);
         }
         
         return doc;

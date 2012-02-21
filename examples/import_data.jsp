@@ -3,8 +3,8 @@
 <%
 
 // Setup importer
-String node = "lrtest02.learningregistry.org";
-LRImporter importerLR = new LRImporter(node, true);
+String node = "sandbox.learningregistry.org";
+LRImporter importerLR = new LRImporter(node, false);
 
 // Make harvest query based on a given resource url
 String id = "http://www.google.com";
@@ -16,11 +16,11 @@ JSONObject json = result.getData();
 
 try
 {
-out.print(json.toString());
+    out.print(json.toString());
 }
-catch(Exception e)
+    catch(Exception e)
 {
-return;
+    return;
 }
 
 %>

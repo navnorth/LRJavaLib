@@ -13,6 +13,8 @@
  */
 package com.navnorth.learningregistry;
 
+import com.navnorth.learningregistry.util.SelfSignSSLSocketFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -46,7 +48,7 @@ import org.apache.http.message.BasicHeader;
 /**
  * Client for sending data to Learning Registry nodes
  *
- * @version 0.1
+ * @version 0.1.1
  * @since 2011-12-06
  * @author Todd Brown / Navigation North
  *      <br>
@@ -61,22 +63,28 @@ public class LRClient {
     // milliseconds
     public static final int HTTP_TIMEOUT = 30 * 1000;    
     
-    public static HttpClient getHttpClient() {
-        try {
-            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            trustStore.load(null, null);
-            SSLSocketFactory sf = new LRSelfSignSSLSocketFactory(trustStore);
-            sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-            HttpParams params = new BasicHttpParams();
-            HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-            HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-            SchemeRegistry registry = new SchemeRegistry();
-            registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-            registry.register(new Scheme("https", sf, 443));
-            ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
-            return new DefaultHttpClient(ccm, params);
-        }
-        catch (Exception e) {
+    public static HttpClient getHttpClient(String scheme) {
+        
+        // TODO: this allows for self-signed certificates, which should just be an option, not used by default.
+        if (scheme.equals("https")) {
+            try {
+                KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                trustStore.load(null, null);
+                SSLSocketFactory sf = new SelfSignSSLSocketFactory(trustStore);
+                sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+                HttpParams params = new BasicHttpParams();
+                HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+                HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+                SchemeRegistry registry = new SchemeRegistry();
+                registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+                registry.register(new Scheme("https", sf, 443));
+                ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
+                return new DefaultHttpClient(ccm, params);
+            }
+            catch (Exception e) {
+                return new DefaultHttpClient();
+            }
+        } else {
             return new DefaultHttpClient();
         }
     }
@@ -86,8 +94,10 @@ public class LRClient {
         BufferedReader in = null;
         
         try {
-            HttpClient client = getHttpClient();
-            HttpPost request = new HttpPost(url);
+            URI uri = new URI(url);
+            HttpClient client = getHttpClient(uri.getScheme());
+            HttpPost request = new HttpPost(uri);
+            
             UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(postParameters);
             request.setEntity(formEntity);
             HttpResponse response = client.execute(request);
@@ -117,9 +127,10 @@ public class LRClient {
     public static String executeHttpGet(String url) throws Exception {
         BufferedReader in = null;
         try {
-            HttpClient client = getHttpClient();
-            HttpGet request = new HttpGet();
-            request.setURI(new URI(url));
+            URI uri = new URI(url);
+            HttpClient client = getHttpClient(uri.getScheme());
+            HttpGet request = new HttpGet(uri);
+
             HttpResponse response = client.execute(request);
             in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             StringBuffer sb = new StringBuffer("");
@@ -147,9 +158,10 @@ public class LRClient {
     public static String executeJsonGet(String url) throws Exception {
         BufferedReader in = null;
         try {
-            HttpClient client = getHttpClient();
-            HttpGet request = new HttpGet();
-            request.setURI(new URI(url));
+            URI uri = new URI(url);
+            HttpClient client = getHttpClient(uri.getScheme());
+            HttpGet request = new HttpGet(uri);
+
             HttpResponse response = client.execute(request);
             in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             StringBuffer sb = new StringBuffer("");
@@ -178,8 +190,9 @@ public class LRClient {
         BufferedReader in = null;
         
         try {
-            HttpClient client = getHttpClient();
-            HttpPost post = new HttpPost(url);
+            URI uri = new URI(url);
+            HttpClient client = getHttpClient(uri.getScheme());
+            HttpPost post = new HttpPost(uri);
 
             post.setEntity(se);
             post.setHeader("Content-Type", "application/json");

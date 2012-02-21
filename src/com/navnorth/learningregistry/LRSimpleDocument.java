@@ -13,6 +13,8 @@
  */
 package com.navnorth.learningregistry;
 
+import com.navnorth.learningregistry.util.StringUtil;
+
 /**
  * Base envelope class from which Learning Registry exportable types are derived
  *
@@ -29,7 +31,7 @@ package com.navnorth.learningregistry;
 public class LRSimpleDocument extends LREnvelope
 {
     /**
-     * Create a new simple documet with specified details
+     * Create a new simple document with specified details
      *
      * @param resourceData value for "resource_data"
      * @param resourceDataType value for "resource_data_type"
@@ -50,20 +52,20 @@ public class LRSimpleDocument extends LREnvelope
         String payloadPlacement, String payloadSchemaLocator, String[] payloadSchema,
         String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer)
     {
-        this.resourceData = LRUtilities.nullifyBadInput(LRUtilities.cleanResourceData(resourceData));
-        this.resourceDataType = LRUtilities.nullifyBadInput(resourceDataType);
-        this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
-        this.curator = LRUtilities.nullifyBadInput(curator);
-        this.owner = LRUtilities.nullifyBadInput(owner);
-        this.tags = LRUtilities.removeDuplicates(tags);
-        this.payloadPlacement = LRUtilities.nullifyBadInput(payloadPlacement);
-        this.payloadSchemaLocator = LRUtilities.nullifyBadInput(payloadSchemaLocator);
-        this.payloadSchema = LRUtilities.nullifyBadInput(payloadSchema);
-        this.submissionTOS = LRUtilities.nullifyBadInput(submissionTOS);
-        this.submissionAttribution = LRUtilities.nullifyBadInput(submissionAttribution);
-        this.submitterType = LRUtilities.nullifyBadInput(submitterType);
-        this.submitter = LRUtilities.nullifyBadInput(submitter);
-        this.signer = LRUtilities.nullifyBadInput(signer);
+        this.resourceData = StringUtil.nullifyBadInput(StringUtil.cleanResourceData(resourceData));
+        this.resourceDataType = StringUtil.nullifyBadInput(resourceDataType);
+        this.resourceLocator = StringUtil.nullifyBadInput(resourceLocator);
+        this.curator = StringUtil.nullifyBadInput(curator);
+        this.owner = StringUtil.nullifyBadInput(owner);
+        this.tags = StringUtil.removeDuplicates(tags);
+        this.payloadPlacement = StringUtil.nullifyBadInput(payloadPlacement);
+        this.payloadSchemaLocator = StringUtil.nullifyBadInput(payloadSchemaLocator);
+        this.payloadSchema = StringUtil.nullifyBadInput(payloadSchema);
+        this.submissionTOS = StringUtil.nullifyBadInput(submissionTOS);
+        this.submissionAttribution = StringUtil.nullifyBadInput(submissionAttribution);
+        this.submitterType = StringUtil.nullifyBadInput(submitterType);
+        this.submitter = StringUtil.nullifyBadInput(submitter);
+        this.signer = StringUtil.nullifyBadInput(signer);
     }
     
     public Object getResourceData()

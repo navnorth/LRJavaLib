@@ -13,6 +13,8 @@
  */
 package com.navnorth.learningregistry;
 
+import com.navnorth.learningregistry.util.StringUtil;
+
 import java.io.IOException;
 import java.util.HashMap;
 import org.json.*;
@@ -21,7 +23,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 /**
  * Base envelope class from which Learning Registry exportable types are derived
  *
- * @version 0.1
+ * @version 0.1.1
  * @since 2011-12-08
  * @author Todd Brown / Navigation North
  *      <br>
@@ -55,31 +57,31 @@ public class LRJSONDocument extends LREnvelope
         String payloadPlacement, String payloadSchemaLocator, String[] payloadSchema,
         String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer) throws LRException
     {
-		try
-		{
-			this.resourceData = new ObjectMapper().readValue(resourceData.toString(), HashMap.class);
-		}
-		catch (IOException e)
-		{
-			throw new LRException(LRException.INVALID_JSON);
-		}
-		
-        this.resourceDataType = LRUtilities.nullifyBadInput(resourceDataType);
-        this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
-        this.curator = LRUtilities.nullifyBadInput(curator);
-        this.owner = LRUtilities.nullifyBadInput(owner);
-        this.tags = LRUtilities.removeDuplicates(tags);
-        this.payloadPlacement = LRUtilities.nullifyBadInput(payloadPlacement);
-        this.payloadSchemaLocator = LRUtilities.nullifyBadInput(payloadSchemaLocator);
-        this.payloadSchema = LRUtilities.nullifyBadInput(payloadSchema);
-        this.submissionTOS = LRUtilities.nullifyBadInput(submissionTOS);
-        this.submissionAttribution = LRUtilities.nullifyBadInput(submissionAttribution);
-        this.submitterType = LRUtilities.nullifyBadInput(submitterType);
-        this.submitter = LRUtilities.nullifyBadInput(submitter);
-        this.signer = LRUtilities.nullifyBadInput(signer);
+        try
+        {
+            this.resourceData = new ObjectMapper().readValue(resourceData.toString(), HashMap.class);
+        }
+        catch (IOException e)
+        {
+            throw new LRException(LRException.INVALID_JSON);
+        }
+        
+        this.resourceDataType = StringUtil.nullifyBadInput(resourceDataType);
+        this.resourceLocator = StringUtil.nullifyBadInput(resourceLocator);
+        this.curator = StringUtil.nullifyBadInput(curator);
+        this.owner = StringUtil.nullifyBadInput(owner);
+        this.tags = StringUtil.removeDuplicates(tags);
+        this.payloadPlacement = StringUtil.nullifyBadInput(payloadPlacement);
+        this.payloadSchemaLocator = StringUtil.nullifyBadInput(payloadSchemaLocator);
+        this.payloadSchema = StringUtil.nullifyBadInput(payloadSchema);
+        this.submissionTOS = StringUtil.nullifyBadInput(submissionTOS);
+        this.submissionAttribution = StringUtil.nullifyBadInput(submissionAttribution);
+        this.submitterType = StringUtil.nullifyBadInput(submitterType);
+        this.submitter = StringUtil.nullifyBadInput(submitter);
+        this.signer = StringUtil.nullifyBadInput(signer);
     }
-	
-	/**
+    
+    /**
      * Create a new simple documet with specified details
      *
      * @param resourceData value for "resource_data"
@@ -101,33 +103,33 @@ public class LRJSONDocument extends LREnvelope
         String payloadPlacement, String payloadSchemaLocator, String[] payloadSchema,
         String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer) throws LRException
     {
-		try
-		{
-			JSONObject resourceJSON = new JSONObject(resourceData);
-			this.resourceData = new ObjectMapper().readValue(resourceJSON.toString(), HashMap.class);
-		}
-		catch (IOException e)
-		{
-			throw new LRException(LRException.INVALID_JSON);
-		}
-		catch (JSONException e)
-		{
-			throw new LRException(LRException.INVALID_JSON);
-		}
-		
-        this.resourceDataType = LRUtilities.nullifyBadInput(resourceDataType);
-        this.resourceLocator = LRUtilities.nullifyBadInput(resourceLocator);
-        this.curator = LRUtilities.nullifyBadInput(curator);
-        this.owner = LRUtilities.nullifyBadInput(owner);
-        this.tags = LRUtilities.removeDuplicates(tags);
-        this.payloadPlacement = LRUtilities.nullifyBadInput(payloadPlacement);
-        this.payloadSchemaLocator = LRUtilities.nullifyBadInput(payloadSchemaLocator);
-        this.payloadSchema = LRUtilities.nullifyBadInput(payloadSchema);
-        this.submissionTOS = LRUtilities.nullifyBadInput(submissionTOS);
-        this.submissionAttribution = LRUtilities.nullifyBadInput(submissionAttribution);
-        this.submitterType = LRUtilities.nullifyBadInput(submitterType);
-        this.submitter = LRUtilities.nullifyBadInput(submitter);
-        this.signer = LRUtilities.nullifyBadInput(signer);
+        try
+        {
+            JSONObject resourceJSON = new JSONObject(resourceData);
+            this.resourceData = new ObjectMapper().readValue(resourceJSON.toString(), HashMap.class);
+        }
+        catch (IOException e)
+        {
+            throw new LRException(LRException.INVALID_JSON);
+        }
+        catch (JSONException e)
+        {
+            throw new LRException(LRException.INVALID_JSON);
+        }
+        
+        this.resourceDataType = StringUtil.nullifyBadInput(resourceDataType);
+        this.resourceLocator = StringUtil.nullifyBadInput(resourceLocator);
+        this.curator = StringUtil.nullifyBadInput(curator);
+        this.owner = StringUtil.nullifyBadInput(owner);
+        this.tags = StringUtil.removeDuplicates(tags);
+        this.payloadPlacement = StringUtil.nullifyBadInput(payloadPlacement);
+        this.payloadSchemaLocator = StringUtil.nullifyBadInput(payloadSchemaLocator);
+        this.payloadSchema = StringUtil.nullifyBadInput(payloadSchema);
+        this.submissionTOS = StringUtil.nullifyBadInput(submissionTOS);
+        this.submissionAttribution = StringUtil.nullifyBadInput(submissionAttribution);
+        this.submitterType = StringUtil.nullifyBadInput(submitterType);
+        this.submitter = StringUtil.nullifyBadInput(submitter);
+        this.signer = StringUtil.nullifyBadInput(signer);
     }
     
     public Object getResourceData()

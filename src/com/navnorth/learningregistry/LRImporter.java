@@ -27,7 +27,7 @@ import org.json.*;
 /**
  * Importer of data from a Learning Registry node
  *
- * @version 0.1
+ * @version 0.1.1
  * @since 2011-11-17
  * @author Todd Brown / Navigation North
  *      <br>
@@ -40,6 +40,7 @@ import org.json.*;
 public class LRImporter
 {
     // LR function paths
+    // TODO : get service URLs from the node itself
     private static String harvestPath = "/harvest/getrecord";
     private static String obtainPath = "/obtain/getrecord";
     
@@ -54,19 +55,39 @@ public class LRImporter
     private static String booleanTrueString = "true";
     private static String booleanFalseString = "false";
     
-    private Boolean useSSL;
-    private String nodeURL;
+    private String nodeHost;
+    private String importProtocol = "http";
     
     /**
      * Creates the importer object
      *
-     * @param nodeURL the URL of the learning registry node
+     * @param nodeHost the IP/domain of the learning registry node
+     * @param importProtocol which protocol to import over (typically "http" or "https")
+     */
+    public LRImporter(String nodeHost, String importProtocol)
+    {
+        this.nodeHost = nodeHost;
+        this.importProtocol = importProtocol;
+    }
+
+    /**
+     * Creates the importer object
+     *  !!! Will be deprecated in future releases in favor of "protocol" parameter !!!
+     *
+     * @param nodeHost the IP/domain of the learning registry node
      * @param useSSL specify if this importer should use SSL
      */
-    public LRImporter(String nodeURL, Boolean useSSL)
+    public LRImporter(String nodeHost, Boolean useSSL)
     {
-        this.useSSL = useSSL;
-        this.nodeURL = nodeURL;
+        this.nodeHost = nodeHost;
+        if (useSSL) 
+        {
+            this.importProtocol = "https";
+        } 
+        else
+        {
+            this.importProtocol = "http";
+        }
     }
     
     /**
@@ -81,7 +102,7 @@ public class LRImporter
      */
     private String getObtainRequestPath(String requestID, Boolean byResourceID, Boolean byDocID, Boolean idsOnly, String resumptionToken)
     {
-        String path = nodeURL + obtainPath;
+        String path = obtainPath;
         
         if (resumptionToken != null)
         {
@@ -139,7 +160,7 @@ public class LRImporter
      */
     private String getHarvestRequestPath(String requestID, Boolean byResourceID, Boolean byDocID)
     {
-        String path = nodeURL + harvestPath;
+        String path = harvestPath;
         
         if (requestID != null)
         {
@@ -178,7 +199,7 @@ public class LRImporter
      * @param resumptionToken the "resumption_token" value to use for this request
      * @return the result from this request
      */
-    public LRResult getObtainJSONData(String resumptionToken)
+    public LRResult getObtainJSONData(String resumptionToken) throws LRException
     {
         return getObtainJSONData(null, null, null, null, resumptionToken);
     }
@@ -192,7 +213,7 @@ public class LRImporter
      * @param idsOnly the "ids_only" value to use for this request
      * @return the result from this request
      */
-    public LRResult getObtainJSONData(String requestID, Boolean byResourceID, Boolean byDocID, Boolean idsOnly)
+    public LRResult getObtainJSONData(String requestID, Boolean byResourceID, Boolean byDocID, Boolean idsOnly) throws LRException
     {
         return getObtainJSONData(requestID, byResourceID, byDocID, idsOnly, null);
     }
@@ -208,20 +229,11 @@ public class LRImporter
      * @param resumptionToken the "resumption_token" value to use for this request
      * @return the result from this request
      */
-    private LRResult getObtainJSONData(String requestID, Boolean byResourceID, Boolean byDocID, Boolean idsOnly, String resumptionToken)
+    private LRResult getObtainJSONData(String requestID, Boolean byResourceID, Boolean byDocID, Boolean idsOnly, String resumptionToken) throws LRException
     {
         String path = getObtainRequestPath(requestID, byResourceID, byDocID, idsOnly, resumptionToken);
-        
-        JSONObject json = null;
-        
-        if (useSSL)
-        {
-            json = getJSONFromPathSSL(path);
-        }
-        else
-        {
-            json = getJSONFromPath(path);
-        }
+                
+        JSONObject json = getJSONFromPath(path);
         
         return new LRResult(json);
     }
@@ -234,117 +246,84 @@ public class LRImporter
      * @param byDocID the "by_doc_id" value to use for this request
      * @return the result from this request
      */
-    public LRResult getHarvestJSONData(String requestID, Boolean byResourceID, Boolean byDocID)
+    public LRResult getHarvestJSONData(String requestID, Boolean byResourceID, Boolean byDocID) throws LRException
     {
         String path = getHarvestRequestPath(requestID, byResourceID, byDocID);
         
-        JSONObject json = null;
+        JSONObject json = getJSONFromPath(path);
         
-        if (useSSL)
-        {
-            json = getJSONFromPathSSL(path);
-        }
-        else
-        {
-            json = getJSONFromPath(path);
-        }
-        
-        return new LRResult(json);	
+        return new LRResult(json);
     }
         
     /**
-     * Get the useSSL value
+     * Get the importProtocol value
      *
-     * @return useSSL value
+     * @return importProtocol value
      */
-    public Boolean getUseSSL()
+    public String getImportProtocol()
     {
-        return useSSL;
+        return importProtocol;
     }
     
     /**
-     * Set the useSSL value
+     * Set the importProtocol value
      *
-     * @param useSSL value
+     * @param importProtocol value
      */
-    public void setUseSSL(Boolean useSSL)
+    public void setImportProtocol(String importProtocol)
     {
-        this.useSSL = useSSL;
+        this.importProtocol = importProtocol;
     }
     
     /**
-     * Get the nodeURL value
+     * Get the nodeHost value
      *
-     * @return nodeURL value
+     * @return nodeHost value
      */
-    public String getNodeURL()
+    public String getNodeHost()
     {
-        return nodeURL;
+        return nodeHost;
     }
     
     /**
-     * Set the nodeURL value
+     * Set the nodeHost value
      *
-     * @param nodeURL value
+     * @param nodeHost value
      */
-    public void setNodeURL(String nodeURL)
+    public void setNodeHost(String nodeHost)
     {
-        this.nodeURL = nodeURL;
+        this.nodeHost = nodeHost;
     }
     
-    /**
-     * Get the data from the specified path as a JSONObject, using SSL
-     * 
-     * @param path the path to use for this request
-     * @return the JSON from the request
-     */
-    private JSONObject getJSONFromPathSSL(String path)
-    {
-        JSONObject json = null;
-        
-        try
-        {
-            String jsonTxt = LRClient.executeJsonGet("https://" + path);
-            json = new JSONObject(jsonTxt);
-        }
-        catch(Exception e)
-        {
-        }
-
-        return json;
-    }
-
     /**
      * Get the data from the specified path as a JSONObject
      * 
      * @param path the path to use for this request
      * @return the JSON from the request
      */
-    private JSONObject getJSONFromPath(String path)
+    private JSONObject getJSONFromPath(String path) throws LRException
     {
         JSONObject json = null;
+        String jsonTxt = null;
         
         try
         {
-            URL importURL = new URL("http://" + path);
-                                    
-            InputStream is = importURL.openStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null)
-            {
-                sb.append(line + "\n");
-            }
-            is.close();
-            
-            String jsonTxt = sb.toString();
-
-            json = new JSONObject(jsonTxt);
+            jsonTxt = LRClient.executeJsonGet(importProtocol + "://" + nodeHost + path);
         }
         catch(Exception e)
         {
+            throw new LRException(LRException.IMPORT_FAILED);
+            //e.printStackTrace();
+        }
+        
+        try
+        {
+            json = new JSONObject(jsonTxt);
+        }
+        catch(JSONException e)
+        {
+            throw new LRException(LRException.JSON_IMPORT_FAILED);
+            //e.printStackTrace();
         }
 
         return json;
