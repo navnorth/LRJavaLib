@@ -76,10 +76,12 @@ Dependencies
  
 --- 
 
-Release History - https://github.com/navnorth/LRJavaLib/wiki/Release-Notes
+Release History
 ========        
-0.1.1 - *2012-02-20*
+full details: https://github.com/navnorth/LRJavaLib/wiki/Release-Notes
+
+0.1.1 - *2012-02-20*  
 Simplified http/https usage, better examples
 
-0.1.0 - *2011-12-08*
+0.1.0 - *2011-12-08*  
 Initial Release
