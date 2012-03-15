@@ -201,24 +201,24 @@ public class LRSigner
             // Get the private key from the InputStream
             PGPSecretKey sk = readSecretKey(privateKeyStream);
             PGPPrivateKey pk = sk.extractPrivateKey(privateKeyPassword, "BC");
-            PGPSignatureGenerator pgp = new PGPSignatureGenerator(sk
-                    .getPublicKey().getAlgorithm(), PGPUtil.SHA256, "BC");
+            PGPSignatureGenerator sGen = new PGPSignatureGenerator(sk.getPublicKey().getAlgorithm(), PGPUtil.SHA256, "BC");
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
             
             // Clear sign the message        
             java.util.Iterator it = sk.getPublicKey().getUserIDs();
             if (it.hasNext()) {
                 spGen.setSignerUserID(false, (String) it.next());
-                pgp.setHashedSubpackets(spGen.generate());
-            }            
+                sGen.setHashedSubpackets(spGen.generate());
+            }
             aOut.beginClearText(PGPUtil.SHA256);
-            pgp.initSign(PGPSignature.CANONICAL_TEXT_DOCUMENT, pk);
+            sGen.initSign(PGPSignature.CANONICAL_TEXT_DOCUMENT, pk);
             byte[] msg = message.getBytes();
-            pgp.update(msg,0,msg.length);
+            sGen.update(msg,0,msg.length);
             aOut.write(msg,0,msg.length);
             BCPGOutputStream bOut = new BCPGOutputStream(aOut);
             aOut.endClearText();
-            pgp.generate().encode(bOut);
+            sGen.generate().encode(bOut);
+            aOut.close();
             String strResult = result.toString("utf8");
             return strResult;
         }
@@ -233,7 +233,7 @@ public class LRSigner
                 if (privateKeyStream != null) {
                     privateKeyStream.close();
                 }
-                aOut.close();
+                
                 result.close();
             }
             catch (IOException e)
