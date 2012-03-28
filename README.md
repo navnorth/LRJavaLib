@@ -80,7 +80,10 @@ Release History
 ========        
 full details: https://github.com/navnorth/LRJavaLib/wiki/Release-Notes
 
-0.1.1 - *2012-02-20*  
+0.1.2 - *2012-03-28*
+Fix bug in signature creation - was failing to put a linebreak before BEGIN PGP SIGNATURE
+
+0.1.1 - *2012-02-20*
 Simplified http/https usage, better examples
 
 0.1.0 - *2011-12-08*  

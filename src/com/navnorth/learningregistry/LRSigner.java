@@ -35,6 +35,8 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;
 import org.bouncycastle.openpgp.*;
+import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 
 import org.ardverk.coding.*;
 
@@ -200,8 +202,8 @@ public class LRSigner
         {
             // Get the private key from the InputStream
             PGPSecretKey sk = readSecretKey(privateKeyStream);
-            PGPPrivateKey pk = sk.extractPrivateKey(privateKeyPassword, "BC");
-            PGPSignatureGenerator sGen = new PGPSignatureGenerator(sk.getPublicKey().getAlgorithm(), PGPUtil.SHA256, "BC");
+            PGPPrivateKey pk = sk.extractPrivateKey(new JcePBESecretKeyDecryptorBuilder().setProvider("BC").build(privateKeyPassword));
+            PGPSignatureGenerator sGen = new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(sk.getPublicKey().getAlgorithm(), PGPUtil.SHA256).setProvider("BC"));
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
             
             // Clear sign the message        
@@ -211,7 +213,7 @@ public class LRSigner
                 sGen.setHashedSubpackets(spGen.generate());
             }
             aOut.beginClearText(PGPUtil.SHA256);
-            sGen.initSign(PGPSignature.CANONICAL_TEXT_DOCUMENT, pk);
+            sGen.init(PGPSignature.CANONICAL_TEXT_DOCUMENT, pk);
             byte[] msg = message.getBytes();
             sGen.update(msg,0,msg.length);
             aOut.write(msg,0,msg.length);
@@ -219,12 +221,17 @@ public class LRSigner
             aOut.endClearText();
             sGen.generate().encode(bOut);
             aOut.close();
+            
             String strResult = result.toString("utf8");
+            
+            // for whatever reason, bouncycastle is failing to put a linebreak before "-----BEGIN PGP SIGNATURE"
+            strResult = strResult.replaceAll("([a-z0-9])-----BEGIN PGP SIGNATURE-----", "$1\n-----BEGIN PGP SIGNATURE-----");
+            
             return strResult;
         }
         catch (Exception e)
         {
-            throw new LRException(LRException.SIGNING_FAILED);
+            throw new LRException(LRException.SIGNING_FAILED); 
         }
         finally
         {
