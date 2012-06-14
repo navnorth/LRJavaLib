@@ -47,6 +47,11 @@ public class LRException extends Exception
     public static final int JSON_IMPORT_FAILED = 15;
     public static final int INVALID_JSON_OBJECT = 16;
     public static final int IMPORT_FAILED = 17;
+	public static final int INPUT_STREAM_FAILED = 18;
+	public static final int SIGNATURE_NOT_FOUND = 19;
+	public static final int SIGNATURE_INVALID = 20;
+	public static final int MESSAGE_INVALID = 21;
+	public static final int INVALID_PUBLIC_KEY = 22;
     
     private Integer code;
     
@@ -119,7 +124,17 @@ public class LRException extends Exception
             return "The batch of documents could not be converted to a JSON string. Check that the node did not return an error or invalid JSON.";
         else if (code == IMPORT_FAILED)
             return "Capturing data from the node failed. Please check that the node is running and returning results properly.";
-        else
-            return "An unknown error has ocurred";
+        else if (code == INPUT_STREAM_FAILED)
+			return "The provided inputs could not be converted into input streams.";
+		else if (code == SIGNATURE_NOT_FOUND)
+			return "A signature matching the provided key could not be found.";
+		else if (code == SIGNATURE_INVALID)
+			return "The signature stream does not contain a valid signature.";
+		else if (code == MESSAGE_INVALID)
+			return "The message stream could not be parsed.";
+		else if (code == INVALID_PUBLIC_KEY)
+			return "The public key stream does not contain a valid public key.";
+		else
+            return "An unknown error has ocurred.";
     }
 }
