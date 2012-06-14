@@ -42,7 +42,7 @@ public class LRImporter
     // LR function paths
     // TODO : get service URLs from the node itself
     private static String harvestPath = "/harvest/getrecord";
-    private static String obtainPath = "/obtain/getrecord";
+    private static String obtainPath = "/obtain";
     
     // LR parameters
     private static String byResourceIDParam = "by_resource_ID";
