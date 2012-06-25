@@ -22,12 +22,16 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import org.json.*;
 
 /**
  * Importer of data from a Learning Registry node
  *
- * @version 0.1.1
+ * @version 0.1.2
  * @since 2011-11-17
  * @author Todd Brown / Navigation North
  *      <br>
@@ -39,10 +43,21 @@ import org.json.*;
  */
 public class LRImporter
 {
+	// Format for date request parameters
+	private static final DateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+
     // LR function paths
     // TODO : get service URLs from the node itself
     private static String harvestPath = "/harvest/getrecord";
     private static String obtainPath = "/obtain/getrecord";
+	private static String extractPath = "/extract";
+	
+	// LR extract parameters
+	private static String resourceParam = "resource";
+	private static String discriminatorParam = "discriminator";
+	private static String startsWithParam = "-starts-with";
+	private static String fromParam = "from";
+	private static String untilParam = "until";
     
     // LR parameters
     private static String byResourceIDParam = "by_resource_ID";
@@ -57,7 +72,7 @@ public class LRImporter
     
     private String nodeHost;
     private String importProtocol = "http";
-    
+	
     /**
      * Creates the importer object
      *
@@ -89,7 +104,7 @@ public class LRImporter
             this.importProtocol = "http";
         }
     }
-    
+
     /**
      * Obtain the path used for an obtain request
      * 
@@ -254,6 +269,117 @@ public class LRImporter
         
         return new LRResult(json);
     }
+	
+	/**
+     * Get an extract request path
+     *
+     * @param dataServiceName name of the data service to use
+     * @param viewName name of the view to use
+     * @param from start date from which to extract items
+	 * @param until end date from which to extract items
+	 * @param idsOnly true/false to only extract ids
+	 * @param mainValue value of the main field
+	 * @param partial true/false is the main field is a partial value
+	 * @param mainName name of the main field (e.g. resource, discriminator)
+     * @return the extract request path with the given parameters
+     */
+	private String getExtractRequestPath(String dataServiceName, String viewName, Date from, Date until, Boolean idsOnly, String mainValue, Boolean partial, String mainName)
+	{
+		String path = extractPath;
+        
+		if (viewName != null)
+		{
+			path += "/" + viewName;
+		}
+		else
+		{
+			return null;
+		}
+		
+		if (dataServiceName != null)
+		{
+			path += "/" + dataServiceName;
+		}
+		else
+		{
+			return null;
+		}
+		
+		if (mainValue != null && mainName != null)
+		{
+			path += "?" + mainName;
+			
+			if (partial)
+			{
+				path += startsWithParam;
+			}
+			
+			path += "=" + mainValue;
+		}
+		else
+		{
+			return null;
+		}
+		
+		if (from != null)
+		{
+			path += "&" + fromParam + "=" + ISO8601.format(from);
+		}
+		
+		if (until != null)
+		{
+			path += "&" + untilParam + "=" + ISO8601.format(until);
+		}
+		
+		if (idsOnly)
+		{
+			path += "&" + idsOnlyParam + "=" + booleanTrueString;
+		}
+        
+        return path;
+	}
+	
+	/**
+	 * Get a result from an extract discriminator request
+	 *
+	 * @param dataServiceName the name of the data service to request through (e.g. resource-by-discriminator)
+	 * @param viewName the name of the view to request through (e.g. standards-alignment-related)
+	 * @param discriminator the discriminator for the request
+	 * @param partial true/false if this is a partial start of a discriminator, rather than a full discriminator
+	 * @param from the starting date from which to extract items
+	 * @param until the ending date from which to extract items
+	 * @param idsOnly true/false to only extract ids with this request
+	 * @return result of the request
+	 */
+	public LRResult getExtractDiscriminatorJSONData(String dataServiceName, String viewName, String discriminator, Boolean partial, Date from, Date until, Boolean idsOnly) throws LRException
+	{
+		String path = getExtractRequestPath(dataServiceName, viewName, from, until, idsOnly, discriminator, partial, discriminatorParam);
+		
+		JSONObject json = getJSONFromPath(path);
+		
+		return new LRResult(json);
+	}
+	
+	/**
+	 * Get a result from an extract discriminator request
+	 *
+	 * @param dataServiceName the name of the data service to request through (e.g. resource-by-discriminator)
+	 * @param viewName the name of the view to request through (e.g. standards-alignment-related)
+	 * @param resource the resource for the request
+	 * @param partial true/false if this is a partial start of a resource, rather than a full resource
+	 * @param from the starting date from which to extract items
+	 * @param until the ending date from which to extract items
+	 * @param idsOnly true/false to only extract ids with this request
+	 * @return result of the request
+	 */
+	public LRResult getExtractResourceJSONData(String dataServiceName, String viewName, String resource, Boolean partial, Date from, Date until, Boolean idsOnly) throws LRException
+	{
+		String path = getExtractRequestPath(dataServiceName, viewName, from, until, idsOnly, resource, partial, resourceParam);
+		
+		JSONObject json = getJSONFromPath(path);
+		
+		return new LRResult(json);
+	}
         
     /**
      * Get the importProtocol value
