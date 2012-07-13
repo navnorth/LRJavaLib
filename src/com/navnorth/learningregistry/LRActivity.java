@@ -124,6 +124,18 @@ public class LRActivity extends LREnvelope
     }
     
     /**
+     * Add an arbitrary map of key-value pairs as a measure to the verb
+     * @param properties
+     * @return True if added, false if not (due to missing required fields or lack of "verb")
+     */
+    public boolean addMeasureToVerb(Map<String, Object> properties)
+    {   
+        String[] pathKeys = {"verb"};
+        return addChild("measure", properties, pathKeys);
+    }
+    
+    
+    /**
      * Add a mesure object to the verb within this activity
      *
      * @param measureType The name of the type of measure to be added (required)
@@ -166,8 +178,7 @@ public class LRActivity extends LREnvelope
             container.put("sampleSize", sampleSize);
         }
         
-        String[] pathKeys = {"verb"};
-        return addChild("measure", container, pathKeys);
+        return addMeasureToVerb(container);
     }
     
     /**
