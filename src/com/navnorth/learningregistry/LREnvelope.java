@@ -63,6 +63,8 @@ public abstract class LREnvelope
     private static final String signatureField = "signature";
     private static final String digitalSignatureField = "digital_signature";
     
+    private static final String submitterTTLField = "submitter_TTL";
+    
     protected String resourceLocator;
     protected String resourceDataType;
     protected Object resourceData;
@@ -78,6 +80,7 @@ public abstract class LREnvelope
     protected String submissionTOS;
     protected String submissionAttribution;
     protected String submitterType;
+    protected String submitterTTL;
     protected String submitter;
     protected String signer;
     
@@ -109,6 +112,7 @@ public abstract class LREnvelope
         MapUtil.put(docId, ownerField, owner);
         MapUtil.put(docId, signerField, signer);
         MapUtil.put(doc, identityField, docId);
+        MapUtil.put(doc, submitterTTLField, submitterTTL);
         Map<String, Object> docTOS = new HashMap<String, Object>();
         MapUtil.put(docTOS, submissionTOSField, submissionTOS);
         MapUtil.put(docTOS, submissionAttributionField, submissionAttribution);
@@ -143,6 +147,7 @@ public abstract class LREnvelope
         MapUtil.put(docId, ownerField, owner);
         MapUtil.put(docId, signerField, signer);
         MapUtil.put(doc, identityField, docId);
+        MapUtil.put(doc, submitterTTLField, submitterTTL);
         Map<String, Object> docTOS = new HashMap<String, Object>();
         MapUtil.put(docTOS, submissionTOSField, submissionTOS);
         MapUtil.put(docTOS, submissionAttributionField, submissionAttribution);
