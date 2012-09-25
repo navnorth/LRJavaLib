@@ -117,7 +117,7 @@ public class LRActivity extends LREnvelope
      * @param submissionTOS value for "submission_TOS"
      * @param submissionAttribution value for "submission_attribution"
      * @param signer value for "signer"
-     * @param tags value for "keys"
+     * @param ttl value for "submitter_TTL"
      */
     public LRActivity(String resourceLocator, String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer, Date ttl)
     {
