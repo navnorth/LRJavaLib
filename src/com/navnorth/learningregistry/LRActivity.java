@@ -107,6 +107,40 @@ public class LRActivity extends LREnvelope
         this.signer = StringUtil.nullifyBadInput(signer);
     }
     
+    /**
+     * Create a new activity with specified details
+     * This version of the constructor includes TTL
+     *
+     * @param resourceLocator value for "resource_locator"
+     * @param submitter value for "submitter"
+     * @param submitterType value for "submitter_type"
+     * @param submissionTOS value for "submission_TOS"
+     * @param submissionAttribution value for "submission_attribution"
+     * @param signer value for "signer"
+     * @param ttl value for "submitter_TTL"
+     */
+    public LRActivity(String resourceLocator, String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer, Date ttl)
+    {
+        this.resourceData = new HashMap<String, Object>();
+        this.resourceDataType = resourceDataTypeValue;
+        this.resourceLocator = StringUtil.nullifyBadInput(resourceLocator);
+        this.curator = null;
+        this.owner = null;
+        this.payloadPlacement = payloadPlacementValue;
+        this.payloadSchemaLocator = null;
+        this.payloadSchema = payloadSchemaValue;
+        this.submissionTOS = StringUtil.nullifyBadInput(submissionTOS);
+        this.submissionAttribution = StringUtil.nullifyBadInput(submissionAttribution);
+        this.submitterType = StringUtil.nullifyBadInput(submitterType);
+        this.submitter = StringUtil.nullifyBadInput(submitter);
+        this.signer = StringUtil.nullifyBadInput(signer);
+        if (ttl != null)
+        {
+        	this.submitterTTL = df.format(ttl);
+        }
+        
+    }
+    
     public Object getResourceData()
     {
         Map<String, Object> returnableData = new HashMap<String, Object>();
