@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URL;
 import java.security.KeyStore;
 import java.util.ArrayList;
 
@@ -94,7 +95,7 @@ public class LRClient {
         BufferedReader in = null;
         
         try {
-            URI uri = new URI(url);
+            URI uri = URIfromURLString(url);
             HttpClient client = getHttpClient(uri.getScheme());
             HttpPost request = new HttpPost(uri);
             
@@ -127,7 +128,7 @@ public class LRClient {
     public static String executeHttpGet(String url) throws Exception {
         BufferedReader in = null;
         try {
-            URI uri = new URI(url);
+            URI uri = URIfromURLString(url);
             HttpClient client = getHttpClient(uri.getScheme());
             HttpGet request = new HttpGet(uri);
 
@@ -158,10 +159,9 @@ public class LRClient {
     public static String executeJsonGet(String url) throws Exception {
         BufferedReader in = null;
         try {
-            URI uri = new URI(url);
+			URI uri = URIfromURLString(url);
             HttpClient client = getHttpClient(uri.getScheme());
             HttpGet request = new HttpGet(uri);
-
             HttpResponse response = client.execute(request);
             in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             StringBuffer sb = new StringBuffer("");
@@ -188,26 +188,26 @@ public class LRClient {
 
     public static HttpResponse executeJsonPost(String url, StringEntity se, String username, String password) throws Exception {
         BufferedReader in = null;
-        
         try {
-            URI uri = new URI(url);
+            URI uri = URIfromURLString(url);
             HttpClient client = getHttpClient(uri.getScheme());
             HttpPost post = new HttpPost(uri);
-
             post.setEntity(se);
             post.setHeader("Content-Type", "application/json");
-
             if (username != null && password != null) {
                 String userPass = username + ":" + password;
                 byte[] encodedAuth = Base64.encodeBase64(userPass.getBytes());
                 String encodedAuthStr = new String(encodedAuth);
                 post.addHeader("Authorization", "Basic " + encodedAuthStr);
             }
-
             HttpResponse response = client.execute(post);
             
             return response;
         }
+		catch (Exception e)
+		{
+			throw(e);
+		}
         finally {
             if (in != null) {
                 try {
@@ -219,4 +219,11 @@ public class LRClient {
             }
         }
     }
+	
+	private static URI URIfromURLString(String urlString) throws Exception
+	{
+		URL url = new URL(urlString);
+		URI uri = new URI(url.getProtocol(), url.getHost(), url.getPath(), url.getQuery(), null);
+		return uri;
+	}
 }

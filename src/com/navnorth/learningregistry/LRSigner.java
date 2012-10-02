@@ -73,7 +73,7 @@ public class LRSigner
     {
         Security.addProvider(new BouncyCastleProvider());
     
-        this.publicKeyLocation = publicKeyLocation;
+        this.publicKeyLocation = publicKeyLocation.replaceAll("&amp;", "&");
         this.privateKey = privateKey;
         this.passPhrase = passPhrase;
         

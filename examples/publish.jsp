@@ -2,17 +2,21 @@
 
 <%
 // default node and signing values
-String nodeHost = (request.getParameter("nodeHost") != null) ? request.getParameter("nodeHost") : "sandbox.learningregistry.org"; 
-String publicKeyLocation = (request.getParameter("publicKeyLocation") != null) ? request.getParameter("publicKeyLocation") : "http://keyserver.pgp.com/vkd/DownloadKey.event?keyid=0x8E155268359114B4";
+String nodeDomain = (request.getParameter("nodeDomain") != null) ? request.getParameter("nodeDomain") : "lrtest02.learningregistry.org"; 
+String publicKeyLocation = (request.getParameter("publicKeyLocation") != null) ? request.getParameter("publicKeyLocation") : "keyserver.pgp.com/vkd/DownloadKey.event?keyid=0x8E155268359114B4";
 String privateKey = (request.getParameter("privateKey") != null) ? request.getParameter("privateKey") : ""; 
 String passPhrase = (request.getParameter("passPhrase") != null) ? request.getParameter("passPhrase") : ""; 
+
+String publishUsername = (request.getParameter("publishUsername") != null) ? request.getParameter("publishUsername") : ""; 
+String publishPassword = (request.getParameter("publishPassword") != null) ? request.getParameter("publishPassword") : ""; 
+Boolean ssl = (request.getParameter("ssl") != null) ? true : false;
 
 // Envelope parameters: these values will usually remain the same for all envelopes of the same schema and type
 String resourceDataType = (request.getParameter("resourceDataType") != null) ? request.getParameter("resourceDataType") : "paradata"; 
 String payloadPlacement = (request.getParameter("payloadPlacement") != null) ? request.getParameter("payloadPlacement") : "inline"; 
 String payloadSchemaURL = "";  // deprecated, but still in the LR lib
 
-// Payload schema - could use StringUtils() from apache commons to join, but we're trying to cut down on dependencies
+// Payload schema
 String[] payloadSchema = (request.getParameter("payloadSchema") != null) ? request.getParameter("payloadSchema").split(",", -1) : new String[] {"LR Paradata 1.0"};
 String payloadSchemaString = "";
 for (int i = 0; i < payloadSchema.length; i++)
@@ -28,7 +32,7 @@ String defaultResData = "{\"activity\":{\"verb\":{\"action\":\"viewed\",\"measur
 String resourceData = (request.getParameter("resourceData") != null) ? request.getParameter("resourceData") : defaultResData;
 String resourceURL = (request.getParameter("resourceURL") != null) ? request.getParameter("resourceURL") : "http://google.com"; 
 
-// Keywords - could use StringUtils() from apache commons to join, but we're trying to cut down on dependencies
+// Keywords
 String[] keywords = (request.getParameter("keywords") != null) ? request.getParameter("keywords").split(",", -1) : new String[] {"lr-test-data"};
 String keywordString = "";
 for (int i = 0; i < keywords.length; i++)
@@ -64,7 +68,7 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
     
     // Setup exporter
     int batchSize = 1;
-    LRExporter exporterLR = new LRExporter(batchSize, nodeHost);
+	LRExporter exporterLR = new LRExporter(batchSize, nodeDomain, publishUsername, publishPassword, ssl);
     
     // Configure exporter
     try {
@@ -140,7 +144,7 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
 				out.print("<h3>Published Resource(s)</h3>");        
 				for(String id : res.getResourceSuccess())
 				{
-					out.print("Id: <a href=\"http://" + nodeHost + "/harvest/getrecord?by_doc_ID=T&request_ID=" + id + "\" target=_\"blank\">" + id + "</a><br/>");
+					out.print("Id: <a href=\"http://" + nodeDomain + "/harvest/getrecord?by_doc_ID=T&request_ID=" + id + "\" target=_\"blank\">" + id + "</a><br/>");
 				}
 				
 				if (!res.getResourceFailure().isEmpty())
@@ -165,7 +169,7 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
 
 
 <form method="post" action="publish.jsp">
-    <b>Node Host:</b> <input type="text" name="nodeHost" value="<%= nodeHost %>" size="60" /><br />
+    <b>Node domain:</b> <input type="text" name="nodeDomain" value="<%= nodeDomain %>" size="60" /><br />
     <hr />
     
     <b>Resource URL:</b> <input type="text" name="resourceURL" value="<%= resourceURL %>" size="60" /><br />
@@ -188,12 +192,17 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
     <b>Submitter Type:</b> <input type="text" name="submitterType" value="<%= submitterType %>" size="60" /><br />
     <b>Submission TOS:</b> <input type="text" name="submissionTOS" value="<%= submissionTOS %>" size="60" /><br />
     <b>Submission Attribution:</b> <input type="text" name="submissionAttribution" value="<%= submissionAttribution %>" size="60" /><br />
-
+	
+	<hr />
+	<b>Publish Username:</b> <input type="text" name="publishUsername" value="<%= publishUsername %>" size="60" /><br />
+	<b>Publish Password:</b> <input type="text" name="publishPassword" value="<%= publishPassword %>" size="60" /><br />
+	<b>SSL:</b> <input type="checkbox" name="ssl" <% if (ssl) out.print("checked=''true''"); %> /><br />
+	
     <hr />
     <b>Public Key Location:</b> <input type="text" name="publicKeyLocation" value="<%= publicKeyLocation %>" size="60" /><br />
     <b>Pass Phrase:</b> <input type="text" name="passPhrase" value="<%= passPhrase %>" size="60" /><br />
     <b>Private Key:</b> <br />
-    <textarea name="privateKey" rows="5" cols="70"><%= privateKey %></textarea><br />
+    <textarea name="privateKey" rows="5" cols="60"><%= privateKey %></textarea><br />
     
 
     <input type="submit" name="publishNow" value="Publish to Node" />
