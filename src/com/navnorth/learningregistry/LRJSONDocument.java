@@ -36,7 +36,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 public class LRJSONDocument extends LREnvelope
 {
     /**
-     * Create a new simple documet with specified details
+     * Create a new simple document with specified details
      *
      * @param resourceData value for "resource_data"
      * @param resourceDataType value for "resource_data_type"
@@ -57,32 +57,13 @@ public class LRJSONDocument extends LREnvelope
         String payloadPlacement, String payloadSchemaLocator, String[] payloadSchema,
         String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer) throws LRException
     {
-        try
-        {
-            this.resourceData = new ObjectMapper().readValue(resourceData.toString(), HashMap.class);
-        }
-        catch (IOException e)
-        {
-            throw new LRException(LRException.INVALID_JSON);
-        }
-        
-        this.resourceDataType = StringUtil.nullifyBadInput(resourceDataType);
-        this.resourceLocator = StringUtil.nullifyBadInput(resourceLocator);
-        this.curator = StringUtil.nullifyBadInput(curator);
-        this.owner = StringUtil.nullifyBadInput(owner);
-        this.tags = StringUtil.removeDuplicates(tags);
-        this.payloadPlacement = StringUtil.nullifyBadInput(payloadPlacement);
-        this.payloadSchemaLocator = StringUtil.nullifyBadInput(payloadSchemaLocator);
-        this.payloadSchema = StringUtil.nullifyBadInput(payloadSchema);
-        this.submissionTOS = StringUtil.nullifyBadInput(submissionTOS);
-        this.submissionAttribution = StringUtil.nullifyBadInput(submissionAttribution);
-        this.submitterType = StringUtil.nullifyBadInput(submitterType);
-        this.submitter = StringUtil.nullifyBadInput(submitter);
-        this.signer = StringUtil.nullifyBadInput(signer);
+        initProperties(this, resourceData, resourceDataType, resourceLocator, curator, owner, tags, payloadPlacement,
+    		payloadSchemaLocator, payloadSchema, submitter, submitterType, submissionTOS,
+    		submissionAttribution, signer, null);
     }
     
     /**
-     * Create a new simple documet with specified details
+     * Create a new simple document with specified details
      *
      * @param resourceData value for "resource_data"
      * @param resourceDataType value for "resource_data_type"
@@ -106,30 +87,72 @@ public class LRJSONDocument extends LREnvelope
         try
         {
             JSONObject resourceJSON = new JSONObject(resourceData);
-            this.resourceData = new ObjectMapper().readValue(resourceJSON.toString(), HashMap.class);
-        }
-        catch (IOException e)
-        {
-            throw new LRException(LRException.INVALID_JSON);
+            initProperties(this, resourceJSON, resourceDataType, resourceLocator, curator, owner, tags, payloadPlacement,
+            		payloadSchemaLocator, payloadSchema, submitter, submitterType, submissionTOS,
+            		submissionAttribution, signer, null);
         }
         catch (JSONException e)
         {
             throw new LRException(LRException.INVALID_JSON);
         }
-        
-        this.resourceDataType = StringUtil.nullifyBadInput(resourceDataType);
-        this.resourceLocator = StringUtil.nullifyBadInput(resourceLocator);
-        this.curator = StringUtil.nullifyBadInput(curator);
-        this.owner = StringUtil.nullifyBadInput(owner);
-        this.tags = StringUtil.removeDuplicates(tags);
-        this.payloadPlacement = StringUtil.nullifyBadInput(payloadPlacement);
-        this.payloadSchemaLocator = StringUtil.nullifyBadInput(payloadSchemaLocator);
-        this.payloadSchema = StringUtil.nullifyBadInput(payloadSchema);
-        this.submissionTOS = StringUtil.nullifyBadInput(submissionTOS);
-        this.submissionAttribution = StringUtil.nullifyBadInput(submissionAttribution);
-        this.submitterType = StringUtil.nullifyBadInput(submitterType);
-        this.submitter = StringUtil.nullifyBadInput(submitter);
-        this.signer = StringUtil.nullifyBadInput(signer);
+    }
+    
+    /**
+     * Create a new simple document with specified details
+     *
+     * @param resourceData value for "resource_data"
+     * @param resourceDataType value for "resource_data_type"
+     * @param resourceLocator value for "resource_locator"
+     * @param curator value for "curator"
+     * @param owner value for "owner"
+     * @param tags value for "keys"
+     * @param payloadPlacement value for "payload_placement"
+     * @param payloadSchemaLocator value for "payload_schema_locator"
+     * @param payloadSchema value for "payload_schema"
+     * @param submitter value for "submitter"
+     * @param submitterType value for "submitter_type"
+     * @param submissionTOS value for "submission_TOS"
+     * @param submissionAttribution value for "submission_attribution"
+     * @param signer value for "signer"
+     * @param replaces array of document IDs to be replaced by this document
+     */
+    public LRJSONDocument(JSONObject resourceData, String resourceDataType, String resourceLocator, String curator, String owner, String[] tags,
+        String payloadPlacement, String payloadSchemaLocator, String[] payloadSchema,
+        String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer,
+        String[] replaces) throws LRException
+    {
+        initProperties(this, resourceData, resourceDataType, resourceLocator, curator, owner, tags, payloadPlacement,
+    		payloadSchemaLocator, payloadSchema, submitter, submitterType, submissionTOS,
+    		submissionAttribution, signer, replaces);
+    }
+    
+    protected void initProperties(LRJSONDocument document, JSONObject resourceData, String resourceDataType, String resourceLocator, String curator, String owner, String[] tags,
+            String payloadPlacement, String payloadSchemaLocator, String[] payloadSchema,
+            String submitter, String submitterType, String submissionTOS, String submissionAttribution, String signer,
+            String[] replaces)  throws LRException
+    {
+    	try 
+    	{
+	        document.resourceData = new ObjectMapper().readValue(resourceData.toString(), HashMap.class);
+	        document.resourceDataType = StringUtil.nullifyBadInput(resourceDataType);
+	        document.resourceLocator = StringUtil.nullifyBadInput(resourceLocator);
+	        document.curator = StringUtil.nullifyBadInput(curator);
+	        document.owner = StringUtil.nullifyBadInput(owner);
+	        document.tags = StringUtil.removeDuplicates(tags);
+	        document.payloadPlacement = StringUtil.nullifyBadInput(payloadPlacement);
+	        document.payloadSchemaLocator = StringUtil.nullifyBadInput(payloadSchemaLocator);
+	        document.payloadSchema = StringUtil.nullifyBadInput(payloadSchema);
+	        document.submissionTOS = StringUtil.nullifyBadInput(submissionTOS);
+	        document.submissionAttribution = StringUtil.nullifyBadInput(submissionAttribution);
+	        document.submitterType = StringUtil.nullifyBadInput(submitterType);
+	        document.submitter = StringUtil.nullifyBadInput(submitter);
+	        document.signer = StringUtil.nullifyBadInput(signer);
+	        document.replaces = StringUtil.removeDuplicates(replaces);
+    	}
+        catch (IOException e)
+        {
+            throw new LRException(LRException.INVALID_JSON);
+        }
     }
     
     public Object getResourceData()

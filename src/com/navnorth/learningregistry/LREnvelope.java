@@ -34,7 +34,7 @@ import java.util.HashMap;
  */
 public abstract class LREnvelope
 {
-    private static final String docVersion = "0.23.0";
+    private static final String docVersion = "0.49.0";
     private static final String docType = "resource_data";
     private static final String active = "true";
     
@@ -57,6 +57,7 @@ public abstract class LREnvelope
     private static final String payloadSchemaLocatorField = "payload_schema_locator";
     private static final String keysField = "keys";
     private static final String resourceDataField = "resource_data";
+    private static final String replacesField = "replaces";
     
     private static final String keyLocationField = "key_location";
     private static final String signingMethodField = "signing_method";
@@ -68,6 +69,8 @@ public abstract class LREnvelope
     protected String resourceLocator;
     protected String resourceDataType;
     protected Object resourceData;
+    
+    protected String[] replaces;
     
     protected String payloadPlacement;
     protected String payloadSchemaLocator;
@@ -123,6 +126,7 @@ public abstract class LREnvelope
         MapUtil.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
         MapUtil.put(doc, keysField, tags);
         MapUtil.put(doc, resourceDataField, getResourceData());
+        MapUtil.put(doc, replacesField, replaces);
         
         return doc;
     }
@@ -158,15 +162,16 @@ public abstract class LREnvelope
         MapUtil.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
         MapUtil.put(doc, keysField, tags);
         MapUtil.put(doc, resourceDataField, getResourceData());
+        MapUtil.put(doc, replacesField, replaces);
         
         if (signed)
         {
             Map<String, Object> sig = new HashMap<String, Object>();
             String[] keys = {publicKeyLocation};
-            MapUtil.put(sig, "key_location", keys);
-            MapUtil.put(sig, "signing_method", signingMethod);
-            MapUtil.put(sig, "signature", clearSignedMessage);
-            MapUtil.put(doc, "digital_signature", sig);
+            MapUtil.put(sig, keyLocationField, keys);
+            MapUtil.put(sig, signingMethodField, signingMethod);
+            MapUtil.put(sig, signatureField, clearSignedMessage);
+            MapUtil.put(doc, digitalSignatureField, sig);
         }
         
         return doc;
