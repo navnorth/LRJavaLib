@@ -15,6 +15,9 @@ package com.navnorth.learningregistry;
 
 import com.navnorth.learningregistry.util.StringUtil;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import java.io.InputStream;
@@ -25,11 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.Provider;
 import java.security.Security;
-import java.security.SignatureException;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
@@ -57,6 +56,7 @@ public class LRSigner
 {
     private static final String pgpRegex = "(?s).*-----BEGIN PGP PRIVATE KEY BLOCK-----.*-----END PGP PRIVATE KEY BLOCK-----.*";
     private static final String signingMethod = "LR-PGP.1.0";
+    private static final String nullLiteral = "null";
 
     private String publicKeyLocation;
     private String privateKey;
@@ -122,6 +122,61 @@ public class LRSigner
         return envelope;
     }
 
+    /**
+     * Normalizes document as LRSignature Python module does
+     * - nulls converted to string literal "null"
+     * - booleans converted to string literals "true" or "false"
+     * - numeric values in lists are dropped
+     * - nested maps/JSON documents are normalized
+     * @param doc Document to normalize
+     */
+    private Map<String, Object> normalizeMap(Map<String, Object> doc) {
+    	
+    	final Map<String, Object> result = new LinkedHashMap<String, Object>();
+    	
+    	for (String key : doc.keySet()) {
+    		Object value = doc.get(key);
+    		
+    		if (value == null) {
+    			result.put(key, nullLiteral);
+    		} else if (value instanceof Boolean) {
+    			result.put(key, ((Boolean) value).toString());
+    		} else if (value instanceof List<?>) {
+    			result.put(key, normalizeList((List<Object>) value));
+    		} else if (value instanceof Map<?, ?>) {
+    			result.put(key, normalizeMap((Map<String, Object>) value));
+    		} else {
+    			result.put(key, value);
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+    /**
+     * Helper for map normalization; inspects list and returns
+     * a replacement list that has been normalized.
+     * @param list
+     * @return Normalized list for encoding/hashing/signing
+     */
+    private List<Object> normalizeList(List<Object> list) {
+    	List<Object> result = new ArrayList<Object>();
+    	for (Object o : list) {
+    		if (o == null) {
+    			result.add(nullLiteral);
+    		} else if (o instanceof Boolean) {
+    			result.add(((Boolean) o).toString());
+    		} else if (o instanceof List<?>) {
+    			result.add(normalizeList((List<Object>) o));
+    		} else if (o instanceof Map<?, ?>) {
+    			result.add(normalizeMap((Map<String, Object>) o));
+    		} else if (!(o instanceof Number)) {
+    			result.add(o);
+    		}
+    	}
+    	return result;
+    }
+    
     
     /**
      * Bencodes document
@@ -130,18 +185,20 @@ public class LRSigner
      * @return Bencoded string of the provided document
      * @throws LRException BENCODE_FAILED if document cannot be bencoded
     */
-    private String bencode(Map<String, Object> doc) throws LRException
+    private String bencode(final Map<String, Object> doc) throws LRException
     {
         String text = "";
         String encodedString = "";
         
-        // Bencode the provided document
+        // normalize the document
+        final Map<String, Object> normalizedDoc = normalizeMap(doc);
         
+        // Bencode the normalized document
         try
         {
             ByteArrayOutputStream s = new ByteArrayOutputStream();
             BencodingOutputStream bencoder = new BencodingOutputStream(s);
-            bencoder.writeMap(doc);
+            bencoder.writeMap(normalizedDoc);
             bencoder.flush();
             encodedString = s.toString();
             s.close();

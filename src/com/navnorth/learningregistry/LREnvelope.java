@@ -16,8 +16,8 @@ package com.navnorth.learningregistry;
 import com.navnorth.learningregistry.util.MapUtil;
 
 import java.util.Map;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Envelope for data to export to a learning registry node
@@ -36,7 +36,6 @@ public abstract class LREnvelope
 {
     private static final String docVersion = "0.49.0";
     private static final String docType = "resource_data";
-    private static final String active = "true";
     
     private static final String docTypeField = "doc_type";
     private static final String docVersionField = "doc_version";
@@ -65,6 +64,8 @@ public abstract class LREnvelope
     private static final String digitalSignatureField = "digital_signature";
     
     private static final String submitterTTLField = "submitter_TTL";
+    
+    private static final String[] excludedFields = {"digital_signature", "publishing_node", "update_timestamp", "node_timestamp", "create_timestamp", "doc_ID", "_id", "_rev"};
     
     protected String resourceLocator;
     protected String resourceDataType;
@@ -102,32 +103,12 @@ public abstract class LREnvelope
      */
     protected Map<String, Object> getSignableData()
     {
-        Map<String, Object> doc = new HashMap<String, Object>();
-        
-        MapUtil.put(doc, docTypeField, docType);
-        MapUtil.put(doc, docVersionField, docVersion);
-        MapUtil.put(doc, activeField, active);
-        MapUtil.put(doc, resourceDataTypeField, resourceDataType);
-        Map<String, Object> docId = new HashMap<String, Object>();
-        MapUtil.put(docId, submitterTypeField, submitterType);
-        MapUtil.put(docId, submitterField, submitter);
-        MapUtil.put(docId, curatorField, curator);
-        MapUtil.put(docId, ownerField, owner);
-        MapUtil.put(docId, signerField, signer);
-        MapUtil.put(doc, identityField, docId);
-        MapUtil.put(doc, submitterTTLField, submitterTTL);
-        Map<String, Object> docTOS = new HashMap<String, Object>();
-        MapUtil.put(docTOS, submissionTOSField, submissionTOS);
-        MapUtil.put(docTOS, submissionAttributionField, submissionAttribution);
-        MapUtil.put(doc, TOSField, docTOS);
-        MapUtil.put(doc, resourceLocatorField, resourceLocator);
-        MapUtil.put(doc, payloadPlacementField, payloadPlacement);
-        MapUtil.put(doc, payloadSchemaField, payloadSchema);
-        MapUtil.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
-        MapUtil.put(doc, keysField, tags);
-        MapUtil.put(doc, resourceDataField, getResourceData());
-        MapUtil.put(doc, replacesField, replaces);
-        
+    	final Map<String, Object> doc = getSendableData();
+    	
+    	// remove node-specific data
+    	for (int i = 0; i < excludedFields.length; i++) {
+    		doc.remove(excludedFields[i]);
+    	}
         return doc;
     }
     
@@ -138,7 +119,7 @@ public abstract class LREnvelope
      */
     protected Map<String, Object> getSendableData()
     {
-        Map<String, Object> doc = new HashMap<String, Object>();
+        Map<String, Object> doc = new LinkedHashMap<String, Object>();
     
         MapUtil.put(doc, docTypeField, docType);
         MapUtil.put(doc, docVersionField, docVersion);

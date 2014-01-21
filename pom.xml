@@ -4,7 +4,7 @@
     <groupId>com.navnorth.learningregistry</groupId>
     <artifactId>LRJavaLib</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.2-BKS</version>
+    <version>0.1.3-BKS</version>
     <name>LRJavaLib</name>
     <url>http://github.com/navnorth/LRJavaLib</url>
 
