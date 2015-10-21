@@ -18,15 +18,16 @@ import com.navnorth.learningregistry.util.MapUtil;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import org.json.JSONObject;
 
 /**
  * Envelope for data to export to a learning registry node
  *
- * @version 0.1.1
- * @since 2011-12-06
- * @author Todd Brown / Navigation North
+ * @version 0.1.3
+ * @since 2014-04-10
+ * @author Joe Hobson / Navigation North
  *      <br>
- *      Copyright © 2011 Navigation North Learning Solutions LLC
+ *      Copyright © 2014 Navigation North
  *      <br>
  *      Licensed under the Apache License, Version 2.0 (the "License"); See LICENSE
  *      and README.md files distributed with this work for additional information
@@ -34,9 +35,9 @@ import java.util.LinkedHashMap;
  */
 public abstract class LREnvelope
 {
-    private static final String docVersion = "0.49.0";
+    private static final String docVersion = "0.51.0";
     private static final String docType = "resource_data";
-    
+
     private static final String docTypeField = "doc_type";
     private static final String docVersionField = "doc_version";
     private static final String activeField = "active";
@@ -57,45 +58,59 @@ public abstract class LREnvelope
     private static final String keysField = "keys";
     private static final String resourceDataField = "resource_data";
     private static final String replacesField = "replaces";
-    
+
     private static final String keyLocationField = "key_location";
     private static final String signingMethodField = "signing_method";
     private static final String signatureField = "signature";
     private static final String digitalSignatureField = "digital_signature";
-    
+
     private static final String submitterTTLField = "submitter_TTL";
-    
+
     private static final String[] excludedFields = {"digital_signature", "publishing_node", "update_timestamp", "node_timestamp", "create_timestamp", "doc_ID", "_id", "_rev"};
-    
+
     protected String resourceLocator;
     protected String resourceDataType;
     protected Object resourceData;
-    
+
     protected String[] replaces;
-    
+
     protected String payloadPlacement;
     protected String payloadSchemaLocator;
     protected String[] payloadSchema;
-    
+
     protected String curator;
     protected String owner;
     protected String[] tags;
-    
+
     protected String submissionTOS;
     protected String submissionAttribution;
     protected String submitterType;
     protected String submitterTTL;
     protected String submitter;
     protected String signer;
-    
+
     protected Boolean signed = false;
-    
+
     protected String publicKeyLocation;
     protected String signingMethod;
     protected String clearSignedMessage;
 
     protected abstract Object getResourceData();
-    
+
+    public final String getEncodedResourceData()
+    {
+        Object data = getResourceData();
+
+        if(data instanceof String)
+        {
+            return (String) data;
+        }
+        else
+        {
+            return JSONObject.valueToString(data);
+        }
+    }
+
     /**
      * Builds and returns a map of the envelope data, suitable for signing with the included signer
      *
@@ -104,14 +119,14 @@ public abstract class LREnvelope
     protected Map<String, Object> getSignableData()
     {
     	final Map<String, Object> doc = getSendableData();
-    	
+
     	// remove node-specific data
     	for (int i = 0; i < excludedFields.length; i++) {
     		doc.remove(excludedFields[i]);
     	}
         return doc;
     }
-    
+
     /**
      * Builds and returns a map of the envelope data including any signing data, suitable for sending to a Learning Registry node
      *
@@ -120,7 +135,7 @@ public abstract class LREnvelope
     protected Map<String, Object> getSendableData()
     {
         Map<String, Object> doc = new LinkedHashMap<String, Object>();
-    
+
         MapUtil.put(doc, docTypeField, docType);
         MapUtil.put(doc, docVersionField, docVersion);
         MapUtil.put(doc, activeField, true);
@@ -142,9 +157,9 @@ public abstract class LREnvelope
         MapUtil.put(doc, payloadSchemaField, payloadSchema);
         MapUtil.put(doc, payloadSchemaLocatorField, payloadSchemaLocator);
         MapUtil.put(doc, keysField, tags);
-        MapUtil.put(doc, resourceDataField, getResourceData());
+        MapUtil.put(doc, resourceDataField, getEncodedResourceData());
         MapUtil.put(doc, replacesField, replaces);
-        
+
         if (signed)
         {
             Map<String, Object> sig = new HashMap<String, Object>();
@@ -154,10 +169,10 @@ public abstract class LREnvelope
             MapUtil.put(sig, signatureField, clearSignedMessage);
             MapUtil.put(doc, digitalSignatureField, sig);
         }
-        
+
         return doc;
     }
-    
+
     /**
      * Adds signing data to the envelope
      *

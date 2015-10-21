@@ -61,7 +61,7 @@ public class LRSigner
     private String publicKeyLocation;
     private String privateKey;
     private String passPhrase;
-    
+
     /**
      * Creates a signer, using specified key values
      *
@@ -72,16 +72,16 @@ public class LRSigner
     public LRSigner(String publicKeyLocation, String privateKey, String passPhrase)
     {
         Security.addProvider(new BouncyCastleProvider());
-    
+
         this.publicKeyLocation = publicKeyLocation.replaceAll("&amp;", "&");
         this.privateKey = privateKey;
         this.passPhrase = passPhrase;
-        
+
         passPhrase = StringUtil.nullifyBadInput(passPhrase);
         publicKeyLocation = StringUtil.nullifyBadInput(publicKeyLocation);
         privateKey = StringUtil.nullifyBadInput(privateKey);
     }
-    
+
     /**
      * Sign the specified envelope with this signer
      *
@@ -93,12 +93,32 @@ public class LRSigner
     {
         // Bencode the document
         String bencodedMessage = bencode(envelope.getSignableData());
-        
+
         // Clear sign the bencoded document
         String clearSignedMessage = signEnvelopeData(bencodedMessage);
-        
+
         envelope.addSigningData(signingMethod, publicKeyLocation, clearSignedMessage);
-        
+
+        return envelope;
+    }
+
+    /**
+     * Sign the specified envelope with this signer
+     *
+     * @param envelope envelope to be signed
+     * @return signed envelope
+     * @throws LRException
+     */
+    public LRDelete sign(LRDelete envelope) throws LRException
+    {
+        // Bencode the document
+        String bencodedMessage = bencode(envelope.getSignableData());
+
+        // Clear sign the bencoded document
+        String clearSignedMessage = signEnvelopeData(bencodedMessage);
+
+        envelope.addSigningData(signingMethod, publicKeyLocation, clearSignedMessage);
+
         return envelope;
     }
 
@@ -113,12 +133,12 @@ public class LRSigner
     {
         // Bencode the document
         String bencodedMessage = bencode(envelope.getSignableData());
-        
+
         // Clear sign the bencoded document
         String clearSignedMessage = signEnvelopeData(bencodedMessage);
-        
+
         envelope.addSigningData(signingMethod, publicKeyLocation, clearSignedMessage);
-        
+
         return envelope;
     }
 
@@ -131,12 +151,12 @@ public class LRSigner
      * @param doc Document to normalize
      */
     private Map<String, Object> normalizeMap(Map<String, Object> doc) {
-    	
+
     	final Map<String, Object> result = new LinkedHashMap<String, Object>();
-    	
+
     	for (String key : doc.keySet()) {
     		Object value = doc.get(key);
-    		
+
     		if (value == null) {
     			result.put(key, nullLiteral);
     		} else if (value instanceof Boolean) {
@@ -149,10 +169,10 @@ public class LRSigner
     			result.put(key, value);
     		}
     	}
-    	
+
     	return result;
     }
-    
+
     /**
      * Helper for map normalization; inspects list and returns
      * a replacement list that has been normalized.
@@ -176,8 +196,8 @@ public class LRSigner
     	}
     	return result;
     }
-    
-    
+
+
     /**
      * Bencodes document
      *
@@ -189,10 +209,10 @@ public class LRSigner
     {
         String text = "";
         String encodedString = "";
-        
+
         // normalize the document
         final Map<String, Object> normalizedDoc = normalizeMap(doc);
-        
+
         // Bencode the normalized document
         try
         {
@@ -205,9 +225,9 @@ public class LRSigner
 
             // Hash the bencoded document
             MessageDigest md;
-            
+
             md = MessageDigest.getInstance("SHA-256");
-                
+
             md.update(encodedString.getBytes());
             byte[] mdbytes = md.digest();
             StringBuffer hexString = new StringBuffer();
@@ -226,10 +246,10 @@ public class LRSigner
         {
             throw new LRException(LRException.BENCODE_FAILED);
         }
-        
+
         return text;
     }
-    
+
     /**
      * Encodes the provided message with the private key and pass phrase set in configuration
      *
@@ -244,17 +264,17 @@ public class LRSigner
         {
             throw new LRException(LRException.NULL_FIELD);
         }
-    
+
         // Get an InputStream for the private key
         InputStream privateKeyStream = getPrivateKeyStream(privateKey);
-        
+
         // Get an OutputStream for the result
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         ArmoredOutputStream aOut = new ArmoredOutputStream(result);
-        
+
         // Get the pass phrase
         char[] privateKeyPassword = passPhrase.toCharArray();
-        
+
         try
         {
             // Get the private key from the InputStream
@@ -262,8 +282,8 @@ public class LRSigner
             PGPPrivateKey pk = sk.extractPrivateKey(new JcePBESecretKeyDecryptorBuilder().setProvider("BC").build(privateKeyPassword));
             PGPSignatureGenerator sGen = new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(sk.getPublicKey().getAlgorithm(), PGPUtil.SHA256).setProvider("BC"));
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-            
-            // Clear sign the message        
+
+            // Clear sign the message
             java.util.Iterator it = sk.getPublicKey().getUserIDs();
             if (it.hasNext()) {
                 spGen.setSignerUserID(false, (String) it.next());
@@ -278,17 +298,17 @@ public class LRSigner
             aOut.endClearText();
             sGen.generate().encode(bOut);
             aOut.close();
-            
+
             String strResult = result.toString("utf8");
-            
+
             // for whatever reason, bouncycastle is failing to put a linebreak before "-----BEGIN PGP SIGNATURE"
             strResult = strResult.replaceAll("([a-z0-9])-----BEGIN PGP SIGNATURE-----", "$1\n-----BEGIN PGP SIGNATURE-----");
-            
+
             return strResult;
         }
         catch (Exception e)
         {
-            throw new LRException(LRException.SIGNING_FAILED); 
+            throw new LRException(LRException.SIGNING_FAILED);
         }
         finally
         {
@@ -297,7 +317,7 @@ public class LRSigner
                 if (privateKeyStream != null) {
                     privateKeyStream.close();
                 }
-                
+
                 result.close();
             }
             catch (IOException e)
@@ -306,7 +326,7 @@ public class LRSigner
             }
         }
     }
-    
+
     /**
      * Reads private key from the provided InputStream
      *
@@ -317,7 +337,7 @@ public class LRSigner
     private PGPSecretKey readSecretKey(InputStream input) throws LRException
     {
         PGPSecretKeyRingCollection pgpSec;
-        
+
         try
         {
             pgpSec = new PGPSecretKeyRingCollection(PGPUtil.getDecoderStream(input));
@@ -343,10 +363,10 @@ public class LRSigner
 
         throw new LRException(LRException.NO_KEY);
     }
-    
+
     /**
      * Converts the local location or text of a private key into an input stream
-     * 
+     *
      * @param privateKey The local location or text of the private key for the digital signature
      * @return Private key stream
      * @throws LRException NO_KEY_STREAM if the private key cannot be turned into a stream

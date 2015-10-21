@@ -2,18 +2,18 @@
 
 <%
 // default node and signing values
-String nodeDomain = (request.getParameter("nodeDomain") != null) ? request.getParameter("nodeDomain") : "lrtest02.learningregistry.org"; 
+String nodeDomain = (request.getParameter("nodeDomain") != null) ? request.getParameter("nodeDomain") : "lrtest02.learningregistry.org";
 String publicKeyLocation = (request.getParameter("publicKeyLocation") != null) ? request.getParameter("publicKeyLocation") : "keyserver.pgp.com/vkd/DownloadKey.event?keyid=0x8E155268359114B4";
-String privateKey = (request.getParameter("privateKey") != null) ? request.getParameter("privateKey") : ""; 
-String passPhrase = (request.getParameter("passPhrase") != null) ? request.getParameter("passPhrase") : ""; 
+String privateKey = (request.getParameter("privateKey") != null) ? request.getParameter("privateKey") : "";
+String passPhrase = (request.getParameter("passPhrase") != null) ? request.getParameter("passPhrase") : "";
 
-String publishUsername = (request.getParameter("publishUsername") != null) ? request.getParameter("publishUsername") : ""; 
-String publishPassword = (request.getParameter("publishPassword") != null) ? request.getParameter("publishPassword") : ""; 
+String publishUsername = (request.getParameter("publishUsername") != null) ? request.getParameter("publishUsername") : "";
+String publishPassword = (request.getParameter("publishPassword") != null) ? request.getParameter("publishPassword") : "";
 Boolean ssl = (request.getParameter("ssl") != null) ? true : false;
 
 // Envelope parameters: these values will usually remain the same for all envelopes of the same schema and type
-String resourceDataType = (request.getParameter("resourceDataType") != null) ? request.getParameter("resourceDataType") : "paradata"; 
-String payloadPlacement = (request.getParameter("payloadPlacement") != null) ? request.getParameter("payloadPlacement") : "inline"; 
+String resourceDataType = (request.getParameter("resourceDataType") != null) ? request.getParameter("resourceDataType") : "paradata";
+String payloadPlacement = (request.getParameter("payloadPlacement") != null) ? request.getParameter("payloadPlacement") : "inline";
 String payloadSchemaURL = "";  // deprecated, but still in the LR lib
 
 // Payload schema
@@ -28,9 +28,9 @@ for (int i = 0; i < payloadSchema.length; i++)
 	}
 }
 
-String defaultResData = "{\"activity\":{\"verb\":{\"action\":\"viewed\",\"measure\":{\"measureType\":\"count\",\"value\":\"1\"},\"context\":{},\"date\":\"2011-11-01\"},\"object\":{\"id\":\"http://google.com\"}}}";
+String defaultResData = "{\"activity\":{\"verb\":{\"action\":\"viewed\",\"measure\":{\"measureType\":\"count\",\"value\":\"1\"},\"context\":{},\"date\":\"2014-04-01\"},\"object\":{\"id\":\"http://google.com\"}}}";
 String resourceData = (request.getParameter("resourceData") != null) ? request.getParameter("resourceData") : defaultResData;
-String resourceURL = (request.getParameter("resourceURL") != null) ? request.getParameter("resourceURL") : "http://google.com"; 
+String resourceURL = (request.getParameter("resourceURL") != null) ? request.getParameter("resourceURL") : "http://google.com";
 
 // Keywords
 String[] keywords = (request.getParameter("keywords") != null) ? request.getParameter("keywords").split(",", -1) : new String[] {"lr-test-data"};
@@ -58,38 +58,38 @@ String submissionAttribution = (request.getParameter("submissionAttribution") !=
 //out.print("<pre>"+resourceData+"</pre>");
 
 // if form submitted.
-if (request.getParameter("publishNow") != null && request.getParameter("publishNow").length() > 0) 
-{    
+if (request.getParameter("publishNow") != null && request.getParameter("publishNow").length() > 0)
+{
 	// List of exceptions for display
 	List<LRException> exceptions = new ArrayList<LRException>();
-    
+
     // Setup signer
     LRSigner signerLR = new LRSigner(publicKeyLocation, privateKey, passPhrase);
-    
+
     // Setup exporter
     int batchSize = 1;
 	LRExporter exporterLR = new LRExporter(batchSize, nodeDomain, publishUsername, publishPassword, ssl);
-    
+
     // Configure exporter
     try {
         exporterLR.configure();
-    } 
+    }
     catch (LRException e) {
 		exceptions.add(e);
     }
-    
+
     // Build resource envelope
     // In a production environment, you would likely put many envelopes into the exporter before sending the data
-    
+
 	LREnvelope doc = null;
-	
+
 	try {
 		doc = new LRJSONDocument(resourceData, resourceDataType, resourceURL, curator, provider, keywords, payloadPlacement, payloadSchemaURL, payloadSchema, submitter, submitterType, submissionTOS, submissionAttribution, signer);
     }
 	catch (LRException e) {
 		exceptions.add(e);
 	}
-	
+
     // sign the doc
     if (privateKey.length() > 0 && passPhrase.length() > 0 && publicKeyLocation.length() > 0)
     {
@@ -100,12 +100,12 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
             exceptions.add(e);
         }
     }
-    
+
 	//out.print("<pre>"+resourceData+"</pre>");
-	
-	
+
+
 	out.print("<div style=\"background-color:#98afc7;margin:10px;padding:10px\"><h1>Publish Results</h2>");
-	
+
 	if (exceptions.size() > 0)
 	{
 		// Output exceptions
@@ -120,7 +120,7 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
 	{
 		// Add envelope to exporter
 		exporterLR.addDocument(doc);
-		
+
 		// Send data and get responses
 		List<LRResponse> responses = null;
 		try {
@@ -129,7 +129,7 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
 		catch(LRException e) {
 			exceptions.add(e);
 		}
-		
+
 		// Parse responses
 		if (responses != null)
 		{
@@ -141,18 +141,18 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
 				out.print("Batch Success: " + res.getBatchSuccess() + "<br/>");
 				out.print("Batch Response: " + res.getBatchResponse() + "<br/><br/>");
 
-				out.print("<h3>Published Resource(s)</h3>");        
+				out.print("<h3>Published Resource(s)</h3>");
 				for(String id : res.getResourceSuccess())
 				{
 					out.print("Id: <a href=\"http://" + nodeDomain + "/harvest/getrecord?by_doc_ID=T&request_ID=" + id + "\" target=_\"blank\">" + id + "</a><br/>");
 				}
-				
+
 				if (!res.getResourceFailure().isEmpty())
 				{
 					out.print("<br/>");
 					out.print("<h3>Publish Errors</h3>");
-					
-					for(String message : res.getResourceFailure()) 
+
+					for(String message : res.getResourceFailure())
 					{
 						out.print("Error: " + message);
 						out.print("<br/>");
@@ -171,7 +171,7 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
 <form method="post" action="publish.jsp">
     <b>Node domain:</b> <input type="text" name="nodeDomain" value="<%= nodeDomain %>" size="60" /><br />
     <hr />
-    
+
     <b>Resource URL:</b> <input type="text" name="resourceURL" value="<%= resourceURL %>" size="60" /><br />
     <b>Resource Data:</b> <br />
     <textarea name="resourceData" rows="5" cols="60"><%= resourceData %></textarea>
@@ -180,11 +180,11 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
     <b>Payload Schema:</b> <input type="text" name="payloadSchema" value="<%= payloadSchemaString %>" size="60" /> (comma-delimited)<br />
     <b>Resource Data Type:</b> <input type="text" name="resourceDataType" value="<%= resourceDataType %>" size="60" /><br />
     <b>Payload Placement:</b> <input type="text" name="payloadPlacement" value="<%= payloadPlacement %>" size="60" /><br />
-    
+
     <hr />
     <b>keywords:</b> <input type="text" name="keywords" value="<%= keywordString %>" size="60" /> (comma-delimited)<br />
-    
-    <hr />    
+
+    <hr />
     <b>Signer:</b> <input type="text" name="signer" value="<%= signer %>" size="60" /><br />
     <b>Curator:</b> <input type="text" name="curator" value="<%= curator %>" size="60" /><br />
     <b>Provider:</b> <input type="text" name="provider" value="<%= provider %>" size="60" /><br />
@@ -192,18 +192,18 @@ if (request.getParameter("publishNow") != null && request.getParameter("publishN
     <b>Submitter Type:</b> <input type="text" name="submitterType" value="<%= submitterType %>" size="60" /><br />
     <b>Submission TOS:</b> <input type="text" name="submissionTOS" value="<%= submissionTOS %>" size="60" /><br />
     <b>Submission Attribution:</b> <input type="text" name="submissionAttribution" value="<%= submissionAttribution %>" size="60" /><br />
-	
+
 	<hr />
 	<b>Publish Username:</b> <input type="text" name="publishUsername" value="<%= publishUsername %>" size="60" /><br />
 	<b>Publish Password:</b> <input type="text" name="publishPassword" value="<%= publishPassword %>" size="60" /><br />
 	<b>SSL:</b> <input type="checkbox" name="ssl" <% if (ssl) out.print("checked=''true''"); %> /><br />
-	
+
     <hr />
     <b>Public Key Location:</b> <input type="text" name="publicKeyLocation" value="<%= publicKeyLocation %>" size="60" /><br />
     <b>Pass Phrase:</b> <input type="text" name="passPhrase" value="<%= passPhrase %>" size="60" /><br />
     <b>Private Key:</b> <br />
     <textarea name="privateKey" rows="5" cols="60"><%= privateKey %></textarea><br />
-    
+
 
     <input type="submit" name="publishNow" value="Publish to Node" />
 </form>
